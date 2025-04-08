@@ -34,7 +34,7 @@ const Header = () => {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <NavLink to={"/"} className="flex-shrink-0">
-            <span className="text-emerald-400 text-2xl font-bold">MANGACOMIC</span>
+           <img src="./src/assets/homelogo.png" alt="home" className="w-32 h-32 object-contain"/>
           </NavLink>
 
           {/* Desktop Menu */}

@@ -211,19 +211,12 @@ const DesktopMenu = ({ menuItems }) => {
           </NavLink>
         </>
       ) : (
-        <>
-          <NavLink to={"/register"}>
-            <button className="bg-emerald-500 text-white px-4 py-2 rounded-md text-sm font-bold hover:bg-emerald-600 transition-colors">
-              Đăng ký
-            </button>
-          </NavLink>
 
           <NavLink to={"/login"}>
             <button className="bg-emerald-500 text-white px-4 py-2 rounded-md text-sm font-bold hover:bg-emerald-600 transition-colors">
               Đăng nhập
             </button>
           </NavLink>
-        </>
       )}
       <div className="relative cursor-pointer" onClick={handleCart}>
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-8 text-white">
