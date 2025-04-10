@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 import DesktopMenu from "./DesktopMenu.jsx";
+import { useAuth } from "../Auth/AuthProvider.jsx";
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -21,12 +22,12 @@ const Header = () => {
   }, []);
 
   const menuItems = [
-    { name: "Thể loại ", subMenu: genre },
-    { name: "Sách miễn phí", href: "/free-book" },
-    { name: "Sách tính phí", href: "/fee-book" },
+    { name: "Assessment", href: "/assessment" },
+    { name: "Review", href: "/review" },
     { name: "Cuộc thi", href: "/contests" },
     { name: "Tin tức", href: "/blogs" },
   ];
+
 
   return (
     <nav className="bg-black/50 backdrop-blur-md fixed w-full top-0 z-50 mb-16">

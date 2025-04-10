@@ -8,7 +8,7 @@ const AuthProvider = ({ children }) => {
   const navigate = useNavigate();
   const loginAction = async (data) => {
     try {
-      const response = await fetch("your-api-endpoint/auth/login", {
+      const response = await fetch("http://localhost:8080/account/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -17,10 +17,10 @@ const AuthProvider = ({ children }) => {
       });
       const res = await response.json();
       if (res.data) {
-        setUser(res.data.user);
-        setToken(res.token);
-        localStorage.setItem("site", res.token);
-        navigate("/home");
+        setUser({name: res.data.username, role: res.data.accRole });
+        setToken(res.data.message);
+        localStorage.setItem("site", res.data.username);
+        navigate("/");
         return;
       }
       throw new Error(res.message);
@@ -29,7 +29,7 @@ const AuthProvider = ({ children }) => {
     }
   };
 
-  const logOut = () => {
+  const logout = () => {
     setUser(null);
     setToken("");
     localStorage.removeItem("site");
@@ -37,14 +37,15 @@ const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ token, user, loginAction, logOut }}>
+    <AuthContext.Provider value={{ token, user, loginAction, logout }}>
       {children}
     </AuthContext.Provider>
   );
 };
-export default AuthProvider;
 
 
-export const useAuth = () => {
+const useAuth = () => {
   return useContext(AuthContext);
 };
+
+export {AuthProvider, useAuth};

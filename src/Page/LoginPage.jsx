@@ -1,37 +1,61 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { FiUser, FiLock, FiMail, FiEye, FiEyeOff, FiMoon, FiSun } from "react-icons/fi";
 import { FaBuilding } from "react-icons/fa";
-
 const LoginPage = () => {
-  const [showPassword, setShowPassword] = useState(false);
+  const [showpwd, setShowpwd] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
+  const navigate = useNavigate(); 
   const [formLogin, setFormLogin] = useState({
-    email: "",
-    password: ""
+    username: "",
+    pwd: ""
   });
   const [errors, setErrors] = useState({});
 
   const validateForm = () => {
     const newErrors = {};
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+    const usernameRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const pwdRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
 
-    if (!emailRegex.test(formLogin.email)) {
-      newErrors.email = "Please enter a valid email address";
+    if (!usernameRegex.test(formLogin.username)) {
+      newErrors.username = "Please enter a valid username address";
     }
 
-    if (!passwordRegex.test(formLogin.password)) {
-      newErrors.password = "Password must be at least 8 characters with letters and numbers";
+    if (!pwdRegex.test(formLogin.pwd)) {
+      newErrors.pwd = "pwd must be at least 8 characters with letters and numbers";
     }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleLogin = (e) => {
+  const loginAction = async (data) => {
+    try {
+      const response = await fetch("http://localhost:8080/account/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+      const res = await response.json();
+      if (res.data) {
+        localStorage.setItem("user", res.data.username);
+        localStorage.setItem("role", res.data.accRole);
+        navigate("/",{ replace: true });
+        return;
+      }
+      throw new Error(res.message);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleSubmit = (e) => {
     e.preventDefault();
     if (!validateForm()) return;
-
+    loginAction(formLogin);
+    return;
   };
 
   const handleInputChange = (e) => {
@@ -42,12 +66,12 @@ const LoginPage = () => {
   return (
     <div className={`w-full min-h-screen flex  ${darkMode ? "bg-gray-900 text-white" : "bg-gray-50"}`}>
       {/* Left Section */}
-      <div className="md:w-1/2 flex items-center justify-center p-8 bg-gradient-to-br from-blue-600 to-blue-800">
+      <div className="md:w-1/2 flex items-center justify-center p-8 bg-gradient-to-r from-blue-600 to-purple-600">
         <div className="max-w-md text-center">
           <img
             src="./src/assets/TimoThumbnail.png"
             alt="HR Analytics"
-            className="w-full h-64 object-cover rounded-lg shadow-xl mb-8"
+            className="w-full h-full object-cover rounded-lg shadow-xl mb-8"
           />
           <h1 className="text-4xl font-bold text-white mb-4">HR KPI Analytics Employees Performance</h1>
           <p className="text-blue-100">Transform your HR metrics into actionable insights</p>
@@ -68,51 +92,51 @@ const LoginPage = () => {
             </button>
           </div>
 
-          <form onSubmit={handleLogin} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label className="block text-sm font-medium mb-2" htmlFor="email">
-                Email Address
+              <label className="block text-sm font-medium mb-2" htmlFor="username">
+                Username
               </label>
               <div className="relative">
                 <FiMail className="absolute left-3 top-3 text-gray-400" />
                 <input
-                  type="email"
-                  id="email"
-                  name="email"
-                  value={formLogin.email}
+                  type="username"
+                  id="username"
+                  name="username"
+                  value={formLogin.username}
                   onChange={handleInputChange}
-                  className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.email ? "border-red-500" : ""}`}
+                  className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.username ? "border-red-500" : ""}`}
                   placeholder="you@company.com"
                   required
                 />
-                {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
+                {errors.username && <p className="text-red-500 text-sm mt-1">{errors.username}</p>}
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-2" htmlFor="password">
+              <label className="block text-sm font-medium mb-2" htmlFor="pwd">
                 Password
               </label>
               <div className="relative">
                 <FiLock className="absolute left-3 top-3 text-gray-400" />
                 <input
-                  type={showPassword ? "text" : "password"}
-                  id="password"
-                  name="password"
-                  value={formLogin.password}
+                  type={showpwd ? "text" : "pwd"}
+                  id="pwd"
+                  name="pwd"
+                  value={formLogin.pwd}
                   onChange={handleInputChange}
-                  className={`w-full pl-10 pr-12 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.password ? "border-red-500" : ""}`}
+                  className={`w-full pl-10 pr-12 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.pwd ? "border-red-500" : ""}`}
                   placeholder="••••••••"
                   required
                 />
                 <button
                   type="button"
-                  onClick={() => setShowPassword(!showPassword)}
+                  onClick={() => setShowpwd(!showpwd)}
                   className="absolute right-3 top-3 text-gray-400"
                 >
-                  {showPassword ? <FiEyeOff /> : <FiEye />}
+                  {showpwd ? <FiEyeOff /> : <FiEye />}
                 </button>
-                {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password}</p>}
+                {errors.pwd && <p className="text-red-500 text-sm mt-1">{errors.pwd}</p>}
               </div>
             </div>
 
@@ -143,13 +167,13 @@ const LoginPage = () => {
                   <span className="ml-2 text-sm">Remember me</span>
                 </label>
                 <a href="#" className="text-sm text-blue-600 hover:text-blue-800">
-                  Forgot password?
+                  Forgot pwd?
                 </a>
               </div> */}
 
             <button
               type="submit"
-              className="mt-16 w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+              className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-4 px-6 rounded-xl hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-300 transform hover:scale-[1.02] font-medium text-lg shadow-lg" 
             >
               Sign In
             </button>

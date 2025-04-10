@@ -1,7 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { FiUser, FiLock, FiMail, FiEye, FiEyeOff, FiMoon, FiSun, FiCheckCircle, FiTarget } from "react-icons/fi";
+import axios from "axios";
+import default_upload from "../assets/default_upload.png"
 
 const Assessment = () => {
+  const fileInputRef = useRef(null);
+  const [isUploading, setIsUploading] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
   const [formData, setFormData] = useState({
     employee_id: "",
@@ -9,10 +13,79 @@ const Assessment = () => {
     kpi_id: "",
     evaluate: 0,
     comments: "",
-    link: "",
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString()
+    link: default_upload
   });
+  const [kpi,setKpi] = useState(null);
+  const [kpa,setKpa] = useState(null);
+
+
+  useEffect(()=>{
+    const fetchKPI = async()=>{
+      try {
+        const response = await fetch(`http://localhost:8080/kpi/getAllName`);
+        const res = await response.json();
+        setKpi(res.data);
+    } catch (error) {
+        console.error('Error fetching data:', error);
+    }
+  };
+    fetchKPI();
+  },[])
+  
+  useEffect(()=>{
+    const fetchKPAbyKPI = async()=>{
+      try {
+        const response = await fetch(`http://localhost:8080/kpa/getAllByKpi/${formData.kpi_id}`);
+        const res = await response.json();
+        setKpa(res.data);
+    } catch (error) {
+        console.error('Error fetching data:', error);
+    }
+  };
+  fetchKPAbyKPI();
+  },[formData.kpi_id])
+
+  const handleEnvidenceChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("File quá lớn. Vui lòng chọn file nhỏ hơn 5MB");
+      return;
+    }
+
+    setIsUploading(true);
+    try {
+      const envidence = new FormData();
+      envidence.append("file", file);
+      envidence.append("upload_preset", "demo-upload");
+
+      const response = await axios.post(
+        "https://api.cloudinary.com/v1_1/dqlb6zx2q/image/upload",
+        envidence
+      );
+      console.log(response.data.secure_url);
+
+      setFormData((prev) => ({
+        ...prev,
+        link: response.data.secure_url,
+      }));
+      console.log("Tải ảnh lên thành công!");
+    } catch (error) {
+      console.log("Có lỗi xảy ra khi tải ảnh lên" + error);
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const handleRemoveEnvidence = (e) => {
+    e.preventDefault();
+    fileInputRef.current.value = "";
+    setFormData((prev) => ({
+      ...prev,
+      link: default_upload,
+    }))
+  }
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -41,40 +114,54 @@ const Assessment = () => {
         <form onSubmit={handleSubmit} className="space-y-8">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div className="space-y-2">
-              <label className="block text-sm font-medium mb-2 text-gray-500 dark:text-gray-400">Employee ID</label>
+              <label className="block text-sm font-medium mb-2 text-black dark:text-gray-400">KPI ID</label>
+              <select
+                className="w-full p-3 border-0 rounded-xl focus:ring-2 focus:ring-blue-500 bg-gray-50 dark:bg-gray-800 shadow-inner"
+                value={formData.kpi_id}
+                onChange={(e) => setFormData({...formData, kpi_id: e.target.value})}
+                required
+              >
+              <option value="" disabled>Chọn loại KPI</option>
+                {kpi?.map((item) => (
+                  <option key={item.kpiId} value={item.kpiId}>
+                      {item.kpiName}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="space-y-2">
+              <label className="block text-sm font-medium mb-2 text-black dark:text-gray-400">KPA ID</label>
+              <select
+                className="w-full p-3 border-0 rounded-xl focus:ring-2 focus:ring-blue-500 bg-gray-50 dark:bg-gray-800 shadow-inner"
+                value={formData.kpa_id}
+                onChange={(e) => setFormData({...formData, kpa_id: e.target.value})}
+                required
+              >
+              <option value="" disabled>Chọn loại KPA</option>
+                {kpa?.map((item) => (
+                  <option key={item.kpaId} value={item.kpaId}>
+                      {item.kpaName}
+                  </option>
+                ))}
+                </select>
+
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="space-y-2">
+              <label className="block text-sm font-medium mb-2 text-black dark:text-gray-400">Employee ID</label>
               <input
-                type="number"
+                type="text"
                 className="w-full p-3 border-0 rounded-xl focus:ring-2 focus:ring-blue-500 bg-gray-50 dark:bg-gray-800 shadow-inner"
                 value={formData.employee_id}
                 onChange={(e) => setFormData({...formData, employee_id: e.target.value})}
                 required
               />
             </div>
+            
             <div className="space-y-2">
-              <label className="block text-sm font-medium mb-2 text-gray-500 dark:text-gray-400">KPA ID</label>
-              <input
-                type="number"
-                className="w-full p-3 border-0 rounded-xl focus:ring-2 focus:ring-blue-500 bg-gray-50 dark:bg-gray-800 shadow-inner"
-                value={formData.kpa_id}
-                onChange={(e) => setFormData({...formData, kpa_id: e.target.value})}
-                required
-              />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="space-y-2">
-              <label className="block text-sm font-medium mb-2 text-gray-500 dark:text-gray-400">KPI ID</label>
-              <input
-                type="number"
-                className="w-full p-3 border-0 rounded-xl focus:ring-2 focus:ring-blue-500 bg-gray-50 dark:bg-gray-800 shadow-inner"
-                value={formData.kpi_id}
-                onChange={(e) => setFormData({...formData, kpi_id: e.target.value})}
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <label className="block text-sm font-medium mb-2 text-gray-500 dark:text-gray-400">Evaluation Score</label>
+              <label className="block text-sm font-medium mb-2 text-black dark:text-gray-400">Evaluation Score</label>
               <input
                 type="number"
                 min="0"
@@ -88,9 +175,9 @@ const Assessment = () => {
           </div>
 
           <div className="space-y-2">
-            <label className="block text-sm font-medium mb-2 text-gray-500 dark:text-gray-400">Comments</label>
+            <label className="block text-sm font-medium mb-2 text-black dark:text-gray-400">Comments</label>
             <textarea
-              className="w-full p-4 border-0 rounded-xl bg-gray-50 dark:bg-gray-800 shadow-inner"
+              className="w-full h-64 p-4 border-0 rounded-xl bg-gray-50 dark:bg-gray-800 shadow-inner"
               rows="4"
               value={formData.comments}
               onChange={(e) => setFormData({...formData, comments: e.target.value})}
@@ -99,14 +186,37 @@ const Assessment = () => {
           </div>
 
           <div className="space-y-2">
-            <label className="block text-sm font-medium mb-2 text-gray-500 dark:text-gray-400">Envident</label>
+            <label className="block text-sm font-medium mb-2 text-black dark:text-gray-400">Envident</label>
+            <div
+            className="w-full h-96 rounded-xl bg-gray-700 mb-4 overflow-hidden cursor-pointer"
+            onClick={() => fileInputRef.current?.click()}
+            style={{
+              backgroundImage: `url(${formData?.link})`,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+            }}
+          />
             <input
-              type="url"
-              className="w-full p-3 border-0 rounded-xl focus:ring-2 focus:ring-blue-500 bg-gray-50 dark:bg-gray-800 shadow-inner"
-              value={formData.link}
-              onChange={(e) => setFormData({...formData, link: e.target.value})}
-              placeholder="https://example.com"
-            />
+            type="file"
+            ref={fileInputRef}
+            onChange={handleEnvidenceChange}
+            accept=".png, .jpg, .jpeg, .gif, .webp, .pdf, .doc, .docx, .txt, .zip, .rar"
+            className="hidden"
+          />
+          <div className='flex '>
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              disabled={isUploading}
+              className="bg-gradient-to-br from-teal-500 to-green-600 text-white py-2 px-4 rounded-lg mr-4"
+            >
+              {isUploading ? "Đang tải lên..." : "Thay ảnh"}
+            </button>
+            <button
+              onClick={handleRemoveEnvidence}
+              className="bg-gradient-to-br from-red-400 to-red-500 text-white py-2 px-4 rounded-lg">
+              Gỡ ảnh
+            </button>
+          </div>
           </div>
 
           <button

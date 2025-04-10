@@ -5,7 +5,7 @@ import Header from './Components/Header'
 import HomePage from './Page/HomePage'
 import LoginPage from './Page/LoginPage'
 import Assessment from './Page/Assessment'
-import AuthProvider from './Auth/AuthProvider'
+import {AuthProvider} from './Auth/AuthProvider'
 
 function App() {
 
