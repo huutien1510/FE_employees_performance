@@ -22,3 +22,27 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Default ignored files
+/shelf/
+/workspace.xml
+/target/              # thư mục build của Maven
+/build/               # nếu dùng Gradle
+/.idea/
+/*.iml
+/.classpath
+/.project
+/.settings/
+/.vscode/
+
+.env
+application.properties
+application.yml
+
+*.log
+*.swp
+*.tmp
+*.bak
+.DS_Store               # MacOS
+Thumbs.db               # Windows
+
