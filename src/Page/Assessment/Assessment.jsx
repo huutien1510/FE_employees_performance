@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import {FiPlus,FiSun,FiMoon,FiCheckCircle,FiClock,FiCalendar,FiArrowRight,FiTrash2,} from "react-icons/fi";
+import { NavLink } from "react-router-dom";
 
 const Assessments = () => {
     const accountID = localStorage.getItem("accountID");
@@ -42,13 +43,12 @@ const Assessments = () => {
             My Assessments
           </h1>
           <div className="flex gap-4">
-            <button
-              onClick={() => setShowAddModal(true)}
+            <NavLink to={"/assessment_create"}
               className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all"
             >
               <FiPlus className="w-5 h-5" />
               New Assessment
-            </button>
+            </NavLink>
             <button
               onClick={() => setDarkMode(!darkMode)}
               className={`p-3 rounded-full ${
