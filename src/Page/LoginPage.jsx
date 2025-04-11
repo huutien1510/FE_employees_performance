@@ -42,6 +42,7 @@ const LoginPage = () => {
       if (res.data) {
         localStorage.setItem("user", res.data.username);
         localStorage.setItem("role", res.data.accRole);
+        localStorage.setItem("accountID", res.data.accountId);
         navigate("/",{ replace: true });
         return;
       }

@@ -4,8 +4,9 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import Header from './Components/Header'
 import HomePage from './Page/HomePage'
 import LoginPage from './Page/LoginPage'
-import Assessment from './Page/Assessment'
+import AssessmentCreate from './Page/Assessment/AssessmentCreate.jsx'
 import {AuthProvider} from './Auth/AuthProvider'
+import Assessments from './Page/Assessment/Assessment.jsx'
 
 function App() {
 
@@ -17,7 +18,8 @@ function App() {
       <Routes>
       <Route path="/" element={<HomePage />} />
       <Route path="/login" element={<LoginPage />} />
-      <Route path="/assessment" element={<Assessment />} />
+      <Route path="/assessment" element={<Assessments />} />
+      <Route path="/assessment_create" element={<AssessmentCreate />} />
       </Routes>
       </AuthProvider>
       </BrowserRouter>

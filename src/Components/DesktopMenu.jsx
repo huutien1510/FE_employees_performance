@@ -60,6 +60,8 @@ const DesktopMenu = ({ menuItems }) => {
 
   const handleLogout =() =>{
     localStorage.removeItem("user");
+    localStorage.removeItem("accountID");
+    localStorage.removeItem("role");
     navigate(`/login`);
     return;
   }
