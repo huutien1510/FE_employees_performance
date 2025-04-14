@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { FiUser, FiLock, FiMail, FiEye, FiEyeOff, FiMoon, FiSun, FiCheckCircle, FiTarget } from "react-icons/fi";
 import axios from "axios";
-import default_upload from "../../assets/default_upload.png"
+import default_upload from "../../../assets/default_upload.png"
 
 const Assessment = () => {
   const fileInputRef = useRef(null);

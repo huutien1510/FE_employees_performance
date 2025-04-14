@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { FiUser, FiLock, FiMail, FiEye, FiEyeOff, FiMoon, FiSun, FiCheckCircle, FiTarget, FiHome, FiBarChart2, FiUsers } from "react-icons/fi";
 
-const HomePage = () => {
+const DashboardPage = () => {
   const [darkMode, setDarkMode] = useState(false);
 
   const glassStyle = darkMode ? 
@@ -9,7 +9,7 @@ const HomePage = () => {
     "bg-white/80 backdrop-blur-lg border border-gray-200";
 
   return (
-    <div className={`mt-16 min-h-screen p-8 ${darkMode ? "bg-gradient-to-br from-gray-900 via-gray-800 to-black" : "bg-gradient-to-br from-blue-50 via-white to-gray-100"} bg-opacity-95`}>
+    <div className={`min-h-screen p-8 ${darkMode ? "bg-gradient-to-br from-gray-900 via-gray-800 to-black" : "bg-gradient-to-br from-blue-50 via-white to-gray-100"} bg-opacity-95`}>
       <div className={`max-w-7xl mx-auto ${glassStyle} rounded-2xl p-8 shadow-xl`}>
         <div className="flex justify-between items-center mb-12">
           <h1 className="text-5xl font-bold bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
@@ -92,4 +92,4 @@ const HomePage = () => {
   );
 };
 
-export default HomePage;
+export default DashboardPage;

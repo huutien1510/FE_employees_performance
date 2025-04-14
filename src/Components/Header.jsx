@@ -1,25 +1,16 @@
 import { useEffect, useState } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import DesktopMenu from "./DesktopMenu.jsx";
 import { useAuth } from "../Auth/AuthProvider.jsx";
 
 const Header = () => {
+  const [role,setRole] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
-  const [genre, setGenre] = useState([])
-  const baseURL = import.meta.env.VITE_API_URL;
+  const location = useLocation();
 
-  useEffect(() => {
-    const fetchGenre = async () => {
-      try {
-        const response = await fetch(`${baseURL}/genres/getAll`);
-        const json = await response.json();
-        setGenre(json.data);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    };
-    fetchGenre();
-  }, []);
+  useEffect(()=>{
+    setRole(localStorage.getItem("role"));
+  },[location]);
 
   const menuItems = [
     { name: "Assessment", href: "/assessment" },
@@ -34,7 +25,7 @@ const Header = () => {
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <NavLink to={"/"} className="flex-shrink-0">
+          <NavLink to={(role === "admin") ? "/admin" :"/user"} className="flex-shrink-0">
            <img src="./src/assets/homelogo.png" alt="home" className="w-32 h-32 object-contain"/>
           </NavLink>
 

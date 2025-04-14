@@ -43,7 +43,9 @@ const LoginPage = () => {
         localStorage.setItem("user", res.data.username);
         localStorage.setItem("role", res.data.accRole);
         localStorage.setItem("accountID", res.data.accountId);
-        navigate("/",{ replace: true });
+        if (res.data.accRole === "admin")
+            navigate("/admin",{ replace: true });
+        else navigate("/user",{ replace: true });
         return;
       }
       throw new Error(res.message);
@@ -121,7 +123,7 @@ const LoginPage = () => {
               <div className="relative">
                 <FiLock className="absolute left-3 top-3 text-gray-400" />
                 <input
-                  type={showpwd ? "text" : "pwd"}
+                  type={showpwd ? "text" : "password"}
                   id="pwd"
                   name="pwd"
                   value={formLogin.pwd}
