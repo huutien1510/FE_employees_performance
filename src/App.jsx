@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import './App.css'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import Header from './Components/Header'
@@ -12,6 +11,9 @@ import LayoutUser from './Components/Layout/LayoutUser.jsx'
 import Page404 from "./Page/Page404.jsx"
 import AdminAssessments from './Page/Admin/Assessment/AdminAssessment.jsx'
 import AssessmentDetails from './Page/Admin/Assessment/AssessmentDetails.jsx'
+import AdminEmployees from './Page/Admin/User/AdminEmployees.jsx'
+import EmployeeDetails from './Page/Admin/User/EmployeeDetails.jsx'
+import AdminReview from './Page/Admin/Review/AdminReviews.jsx'
 
 function App() {
 
@@ -29,8 +31,11 @@ function App() {
             </Route>
             <Route path="/admin" element={<LayoutAdmin />}>
               <Route index element={<DashboardPage />} />
-              <Route path="assessment" element={<AdminAssessments />} />
-              <Route index path="assessment_details" element={<AssessmentDetails />} />
+              <Route path="assessments" element={<AdminAssessments />} />
+              <Route path="assessment_details" element={<AssessmentDetails />} />
+              <Route path="employees" element={<AdminEmployees />} />
+              <Route path="employee_details" element={<EmployeeDetails />} />
+              <Route path="reviews" element={<AdminReview />} />
             </Route>
 
           </Routes>

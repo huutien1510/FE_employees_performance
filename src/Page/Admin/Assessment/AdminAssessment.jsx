@@ -9,6 +9,10 @@ const AdminAssessments = () => {
     const [assessments, setAssessments] = useState(null);
     const inputRef = useRef(null);
     const [currentPage, setCurrentPage] = useState(1);
+    const [totalElements, setTotalElements] = useState(0);
+    const [reviewedElements, setReviewedElements] = useState(0);
+    const [pendingElements, setPendingElements] = useState(0);
+    const [cancelElements, setCancelElements] = useState(0);
     const [totalPages, setTotalPages] = useState(1);
     const size = 10;
     const location = useLocation();
@@ -29,7 +33,12 @@ const AdminAssessments = () => {
             try {
                 const response = await fetch(`http://localhost:8080/assessment/getTotalElements`);
                 const res = await response.json();
-                setTotalPages(Math.ceil(res.data / size));
+                console.log(res.data)
+                setReviewedElements(res.data.reviewedElements);
+                setPendingElements(res.data.pendingElements);
+                setCancelElements(res.data.cancelElements);
+                setTotalElements(res.data.reviewedElements + res.data.pendingElements + res.data.cancelElements);
+                setTotalPages(Math.ceil((res.data.reviewedElements + res.data.pendingElements + res.data.cancelElements) / size));
             } catch (error) {
                 console.error("Error fetching data:", error);
             }
@@ -56,7 +65,9 @@ const AdminAssessments = () => {
             <div className="flex justify-center">
                 <div className="w-full max-w-screen-xl p-8">
                     <div className="flex justify-between items-center mb-8">
-                        <h1 className="text-2xl font-bold">Assessments</h1>
+                        <h1 className="text-5xl font-bold bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
+                            Assessment
+                        </h1>
                         <div className="flex gap-4">
                             <button
                                 onClick={() => setShowAddModal(true)}
@@ -76,13 +87,13 @@ const AdminAssessments = () => {
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
                         <div
                             className={`p-6 rounded-xl transition-colors ${darkMode ? "bg-gray-800/50 border border-gray-700/50" : "bg-blue-50 border border-blue-200/50"
                                 }`}
                         >
                             <h3 className="text-lg font-semibold mb-2">Total Assessments</h3>
-                            <p className={`text-3xl font-bold ${darkMode ? "text-blue-400" : "text-blue-600"}`}>{assessments?.length}</p>
+                            <p className={`text-3xl font-bold ${darkMode ? "text-blue-400" : "text-blue-600"}`}>{totalElements}</p>
                         </div>
                         <div
                             className={`p-6 rounded-xl transition-colors ${darkMode ? "bg-gray-800/50 border border-gray-700/50" : "bg-green-50 border border-green-200/50"
@@ -90,7 +101,7 @@ const AdminAssessments = () => {
                         >
                             <h3 className="text-lg font-semibold mb-2">Reviewed</h3>
                             <p className={`text-3xl font-bold ${darkMode ? "text-green-400" : "text-green-600"}`}>
-                                {assessments?.filter((a) => a.is_reviewed).length}
+                                {reviewedElements}
                             </p>
                         </div>
                         <div
@@ -99,7 +110,16 @@ const AdminAssessments = () => {
                         >
                             <h3 className="text-lg font-semibold mb-2">Pending</h3>
                             <p className={`text-3xl font-bold ${darkMode ? "text-yellow-400" : "text-yellow-600"}`}>
-                                {assessments?.filter((a) => !a.is_reviewed).length}
+                                {pendingElements}
+                            </p>
+                        </div>
+                        <div
+                            className={`p-6 rounded-xl transition-colors ${darkMode ? "bg-gray-800/50 border border-gray-700/50" : "bg-red-50 border border-red-200/50"
+                                }`}
+                        >
+                            <h3 className="text-lg font-semibold mb-2">Cancel</h3>
+                            <p className={`text-3xl font-bold ${darkMode ? "text-red-400" : "text-red-600"}`}>
+                                {cancelElements}
                             </p>
                         </div>
                     </div>
@@ -133,23 +153,32 @@ const AdminAssessments = () => {
                                                 </div>
                                                 <div className="flex items-center gap-3">
                                                     <span
-                                                        className={`px-2 py-1 rounded-full text-sm font-medium ${assessment?.is_reviewed
-                                                            ? darkMode
+                                                        className={`px-2 py-1 rounded-full text-sm font-medium ${assessment?.status === 'reviewed' ?
+                                                            (darkMode
                                                                 ? "bg-green-900/50 text-green-400"
-                                                                : "bg-green-100 text-green-700"
-                                                            : darkMode
-                                                                ? "bg-yellow-900/50 text-yellow-400"
-                                                                : "bg-yellow-100 text-yellow-700"
+                                                                : "bg-green-100 text-green-700")
+                                                            : assessment?.status === 'pending'
+                                                                ? (darkMode
+                                                                    ? "bg-yellow-900/50 text-yellow-400"
+                                                                    : "bg-yellow-100 text-yellow-700")
+                                                                : (darkMode
+                                                                    ? "bg-red-900/50 text-red-400"
+                                                                    : "bg-red-100 text-red-700")
                                                             }`}
                                                     >
-                                                        {assessment?.is_reviewed ? "Reviewed" : "Pending"}
+                                                        {assessment?.status === 'reviewed'
+                                                            ? "Reviewed"
+                                                            : assessment?.status === 'pending'
+                                                                ? "Pending"
+                                                                : "Cancelled"}
                                                     </span>
+
                                                     <span
                                                         className={`text-sm flex items-center gap-1 whitespace-nowrap ${darkMode ? "text-gray-400" : "text-gray-500"
                                                             }`}
                                                     >
                                                         <FiCalendar className="w-4 h-4" />
-                                                        {new Date(assessment?.updateAt).toLocaleDateString("vi-VN", {
+                                                        {new Date(assessment?.updatedAt).toLocaleDateString("vi-VN", {
                                                             day: "2-digit",
                                                             month: "2-digit",
                                                             year: "numeric",

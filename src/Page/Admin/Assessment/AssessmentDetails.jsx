@@ -13,15 +13,52 @@ const AssessmentDetails = () => {
             <div className="max-w-6xl mx-auto space-y-8">
                 <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100 transform hover:scale-[1.01] transition-all">
                     <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                        <h1 className="text-3xl font-bold text-gray-900 tracking-tight bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Assessment Review</h1>
+                        <h1 className="text-3xl font-bold text-gray-900 tracking-tight bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                            Assessment Review
+                        </h1>
+
+                        <span
+                            className={`flex items-center gap-2 px-4 py-1.5 rounded-full text-base font-semibold shadow-sm border ${assessment?.status === 'reviewed'
+                                ? 'bg-green-100 text-green-700 border-green-300'
+                                : assessment?.status === 'pending'
+                                    ? 'bg-yellow-100 text-yellow-700 border-yellow-300'
+                                    : 'bg-red-100 text-red-700 border-red-300'
+                                }`}
+                        >
+                            {assessment?.status === 'reviewed' && (
+                                <>
+                                    <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 00-1.414 0L8 12.586 4.707 9.293a1 1 0 00-1.414 1.414l4 4a1 1 0 001.414 0l8-8a1 1 0 000-1.414z" clipRule="evenodd" />
+                                    </svg>
+                                    Reviewed
+                                </>
+                            )}
+                            {assessment?.status === 'pending' && (
+                                <>
+                                    <svg className="w-4 h-4 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fillRule="evenodd" d="M10 2a8 8 0 100 16 8 8 0 000-16zm1 11H9v-2h2v2zm0-4H9V5h2v4z" clipRule="evenodd" />
+                                    </svg>
+                                    Pending
+                                </>
+                            )}
+                            {assessment?.status === 'cancel' && (
+                                <>
+                                    <svg className="w-4 h-4 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm2.121-10.121a1 1 0 00-1.414-1.414L10 8.586 9.293 7.879a1 1 0 00-1.414 1.414L8.586 10l-.707.707a1 1 0 001.414 1.414L10 11.414l.707.707a1 1 0 001.414-1.414L11.414 10l.707-.707z" clipRule="evenodd" />
+                                    </svg>
+                                    Cancelled
+                                </>
+                            )}
+                        </span>
+
                         <div className="flex items-center text-gray-500 text-sm bg-gray-50 px-4 py-2 rounded-full shadow-inner">
                             <FaClock className="mr-2" />
-                            {new Date(assessment?.updateAt).toLocaleDateString("vi-VN", {
-                                day: "2-digit",
-                                month: "2-digit",
-                                year: "numeric",
-                                hour: "2-digit",
-                                minute: "2-digit",
+                            {new Date(assessment?.updatedAt).toLocaleDateString('vi-VN', {
+                                day: '2-digit',
+                                month: '2-digit',
+                                year: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit',
                             })}
                         </div>
                     </div>

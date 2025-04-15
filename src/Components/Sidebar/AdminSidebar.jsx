@@ -1,4 +1,4 @@
-import { FiUser, FiLock, FiMail, FiEye, FiEyeOff, FiMoon, FiSun, FiCheckCircle, FiTarget, FiHome, FiBarChart2, FiUsers, FiPlus, FiEdit2, FiTrash2, FiClock, FiMessageSquare, FiCalendar, FiArrowRight, FiFolder, FiFile, FiStar, FiShare2, FiSearch, FiBell, FiSettings } from "react-icons/fi";
+import { FiHome, FiBarChart2, FiUsers, FiMessageSquare, FiSettings } from "react-icons/fi";
 import { NavLink } from "react-router-dom";
 
 const AdminSidebar = ({ darkMode }) => {
@@ -15,9 +15,9 @@ const AdminSidebar = ({ darkMode }) => {
         <nav className="space-y-3">
           {[
             { icon: FiHome, label: "Dashboard", to: "/admin", end: true },
-            { icon: FiUsers, label: "Users", to: "/admin/user" },
-            { icon: FiBarChart2, label: "Assessment", to: "/admin/assessment" },
-            { icon: FiMessageSquare, label: "Messages", to: "/admin/mess" },
+            { icon: FiUsers, label: "Employees", to: "/admin/employees" },
+            { icon: FiBarChart2, label: "Assessments", to: "/admin/assessments" },
+            { icon: FiMessageSquare, label: "Reviews", to: "/admin/reviews" },
             { icon: FiSettings, label: "Settings", to: "/admin/set" }
           ].map((item) => (
             <NavLink
