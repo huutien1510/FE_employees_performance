@@ -8,6 +8,7 @@ const AdminEmployees = () => {
     const [employees, setEmployees] = useState(null);
     const location = useLocation();
     const inputRef = useRef(null);
+    const [totalEmployees, setTotalEmployees] = useState(0);
     const [totalPages, setTotalPages] = useState(1);
     const [currentPage, setCurrentPage] = useState(1);
     const size = 10;
@@ -28,6 +29,7 @@ const AdminEmployees = () => {
             try {
                 const response = await fetch(`http://localhost:8080/employees/getTotalElements`);
                 const res = await response.json();
+                setTotalEmployees(res.data);;
                 setTotalPages(Math.ceil(res.data / size));
             } catch (error) {
                 console.error("Error fetching data:", error);
@@ -72,7 +74,7 @@ const AdminEmployees = () => {
 
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
                         {[
-                            { label: "Total employees", value: "1,234", icon: FiUser, color: "blue" },
+                            { label: "Total employees", value: totalEmployees, icon: FiUser, color: "blue" },
                             { label: "Active Now", value: "842", icon: FiCheckCircle, color: "green" },
                             { label: "New Today", value: "24", icon: FiPlus, color: "purple" },
                             { label: "Pending", value: "12", icon: FiClock, color: "yellow" }

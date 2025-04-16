@@ -3,7 +3,7 @@ import { FaStar, FaLink, FaUser, FaClock, FaBuilding, FaImage } from "react-icon
 
 import { useLocation } from "react-router-dom";
 
-const AssessmentDetails = () => {
+const UserAssessmentDetails = () => {
     const localtion = useLocation();
     const assessment = localtion.state?.assessment;
     console.log(assessment);
@@ -158,4 +158,4 @@ const AssessmentDetails = () => {
     );
 };
 
-export default AssessmentDetails;
+export default UserAssessmentDetails;

@@ -1,4 +1,5 @@
 import './App.css'
+import './index.css';
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import Header from './Components/Header'
 import DashboardPage from './Page/Admin/DashboardPage.jsx'
@@ -11,9 +12,11 @@ import LayoutUser from './Components/Layout/LayoutUser.jsx'
 import Page404 from "./Page/Page404.jsx"
 import AdminAssessments from './Page/Admin/Assessment/AdminAssessment.jsx'
 import AssessmentDetails from './Page/Admin/Assessment/AssessmentDetails.jsx'
-import AdminEmployees from './Page/Admin/User/AdminEmployees.jsx'
-import EmployeeDetails from './Page/Admin/User/EmployeeDetails.jsx'
+import AdminEmployees from './Page/Admin/Employee/AdminEmployees.jsx'
+import EmployeeDetails from './Page/Admin/Employee/EmployeeDetails.jsx'
 import AdminReview from './Page/Admin/Review/AdminReviews.jsx'
+import ReviewDetails from './Page/Admin/Review/ReviewDetails.jsx';
+import PerformanceEvaluation from './PerformanceEvaluation.jsx';
 
 function App() {
 
@@ -36,6 +39,8 @@ function App() {
               <Route path="employees" element={<AdminEmployees />} />
               <Route path="employee_details" element={<EmployeeDetails />} />
               <Route path="reviews" element={<AdminReview />} />
+              <Route path="review_details" element={<ReviewDetails />} />
+              <Route path="test" element={<PerformanceEvaluation />} />
             </Route>
 
           </Routes>
