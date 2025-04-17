@@ -4,7 +4,7 @@ import { FiMessageSquare, FiStar } from "react-icons/fi";
 
 import { useLocation, useNavigate } from "react-router-dom";
 
-const ReviewDetails = () => {
+const UserReviewDetails = () => {
     const localtion = useLocation();
     const navigate = useNavigate();
     const [review, setReview] = useState(localtion.state?.review);
@@ -231,4 +231,4 @@ const ReviewDetails = () => {
     );
 };
 
-export default ReviewDetails;
+export default UserReviewDetails;

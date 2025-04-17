@@ -1,4 +1,5 @@
 import { FiUser, FiLock, FiMail, FiEye, FiEyeOff, FiMoon, FiSun, FiCheckCircle, FiTarget, FiHome, FiBarChart2, FiUsers, FiPlus, FiEdit2, FiTrash2, FiClock, FiMessageSquare, FiCalendar, FiArrowRight, FiFolder, FiFile, FiStar, FiShare2, FiSearch, FiBell, FiSettings } from "react-icons/fi";
+import { NavLink } from "react-router-dom";
 
 const UserSidebar = ({ darkMode }) => {
   return (
@@ -9,24 +10,29 @@ const UserSidebar = ({ darkMode }) => {
           <div className="p-2 bg-blue-500 rounded-lg">
             <FiUsers className="w-6 h-6 text-white" />
           </div>
-          <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">UserHub</h1>
+          <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">HR Assessment</h1>
         </div>
         <nav className="space-y-3">
           {[
-            { icon: FiHome, label: "Dashboard", active: true },
-            { icon: FiUsers, label: "Users" },
-            { icon: FiBarChart2, label: "Analytics" },
-            { icon: FiMessageSquare, label: "Messages" },
-            { icon: FiSettings, label: "Settings" }
+            { icon: FiUsers, label: "Employees", to: "/user/employees" },
+            { icon: FiBarChart2, label: "Assessments", to: "/user/assessments" },
+            { icon: FiMessageSquare, label: "Reviews", to: "/user/reviews" },
+            { icon: FiSettings, label: "Settings", to: "/user/set" }
           ].map((item) => (
-            <button
+            <NavLink
+              to={item.to}
               key={item.label}
-              className={`w-full flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-300 ${item.active ? "bg-blue-500 text-white" : darkMode ? "hover:bg-gray-800" : "hover:bg-gray-100"}`}
+              end={item.end}
+              className={({ isActive }) => `w-full flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-300 ${isActive ? "bg-blue-500 text-white hover:text-gray-700" : darkMode ? "hover:bg-gray-800" : "hover:bg-gray-100"}`}
             >
-              <item.icon className={`w-5 h-5 ${item.active ? "text-white" : "text-gray-500"}`} />
-              <span className="font-medium">{item.label}</span>
-              {item.active && <div className="ml-auto w-2 h-2 rounded-full bg-white"></div>}
-            </button>
+              {({ isActive }) => (
+                <>
+                  <item.icon className={`w-5 h-5 ${isActive ? "text-white" : "text-gray-500"}`} />
+                  <span className="font-medium">{item.label}</span>
+                  {isActive && <div className="ml-auto w-2 h-2 rounded-full bg-white"></div>}
+                </>
+              )}
+            </NavLink>
           ))}
         </nav>
       </div>

@@ -15,35 +15,35 @@ const Assessment = () => {
     comments: "",
     link: default_upload
   });
-  const [kpi,setKpi] = useState(null);
-  const [kpa,setKpa] = useState(null);
+  const [kpi, setKpi] = useState(null);
+  const [kpa, setKpa] = useState(null);
 
 
-  useEffect(()=>{
-    const fetchKPI = async()=>{
+  useEffect(() => {
+    const fetchKPI = async () => {
       try {
         const response = await fetch(`http://localhost:8080/kpi/getAllName`);
         const res = await response.json();
         setKpi(res.data);
-    } catch (error) {
+      } catch (error) {
         console.error('Error fetching data:', error);
-    }
-  };
+      }
+    };
     fetchKPI();
-  },[])
-  
-  useEffect(()=>{
-    const fetchKPAbyKPI = async()=>{
+  }, [])
+
+  useEffect(() => {
+    const fetchKPAbyKPI = async () => {
       try {
         const response = await fetch(`http://localhost:8080/kpa/getAllByKpi/${formData.kpi_id}`);
         const res = await response.json();
         setKpa(res.data);
-    } catch (error) {
+      } catch (error) {
         console.error('Error fetching data:', error);
-    }
-  };
-  if (formData.kpi_id) fetchKPAbyKPI();
-  },[formData.kpi_id])
+      }
+    };
+    if (formData.kpi_id) fetchKPAbyKPI();
+  }, [formData.kpi_id])
 
   const handleEnvidenceChange = async (e) => {
     const file = e.target.files[0];
@@ -66,10 +66,8 @@ const Assessment = () => {
       );
       console.log(response.data.secure_url);
 
-      setFormData((prev) => ({
-        ...prev,
-        link: response.data.secure_url,
-      }));
+      setPreviewImage(imageUrl);
+      setFormData((prev) => ({ ...prev, link: imageUrl }));
       console.log("Tải ảnh lên thành công!");
     } catch (error) {
       console.log("Có lỗi xảy ra khi tải ảnh lên" + error);
@@ -92,7 +90,7 @@ const Assessment = () => {
     console.log("Assessment submitted:", formData);
   };
 
-  const glassStyle = darkMode ? 
+  const glassStyle = darkMode ?
     "bg-gray-900/80 backdrop-blur-lg border border-gray-700" :
     "bg-white/80 backdrop-blur-lg border border-gray-200";
 
@@ -118,13 +116,13 @@ const Assessment = () => {
               <select
                 className="w-full p-3 border-0 rounded-xl focus:ring-2 focus:ring-blue-500 bg-gray-50 dark:bg-gray-800 shadow-inner"
                 value={formData.kpi_id}
-                onChange={(e) => setFormData({...formData, kpi_id: e.target.value})}
+                onChange={(e) => setFormData({ ...formData, kpi_id: e.target.value })}
                 required
               >
-              <option value="" disabled>Chọn loại KPI</option>
+                <option value="" disabled>Chọn loại KPI</option>
                 {kpi?.map((item) => (
                   <option key={item.kpiId} value={item.kpiId}>
-                      {item.kpiName}
+                    {item.kpiName}
                   </option>
                 ))}
               </select>
@@ -134,16 +132,16 @@ const Assessment = () => {
               <select
                 className="w-full p-3 border-0 rounded-xl focus:ring-2 focus:ring-blue-500 bg-gray-50 dark:bg-gray-800 shadow-inner"
                 value={formData.kpa_id}
-                onChange={(e) => setFormData({...formData, kpa_id: e.target.value})}
+                onChange={(e) => setFormData({ ...formData, kpa_id: e.target.value })}
                 required
               >
-              <option value="" disabled>Chọn loại KPA</option>
+                <option value="" disabled>Chọn loại KPA</option>
                 {kpa?.map((item) => (
                   <option key={item.kpaId} value={item.kpaId}>
-                      {item.kpaName}
+                    {item.kpaName}
                   </option>
                 ))}
-                </select>
+              </select>
 
             </div>
           </div>
@@ -155,11 +153,11 @@ const Assessment = () => {
                 type="text"
                 className="w-full p-3 border-0 rounded-xl focus:ring-2 focus:ring-blue-500 bg-gray-50 dark:bg-gray-800 shadow-inner"
                 value={formData.employee_id}
-                onChange={(e) => setFormData({...formData, employee_id: e.target.value})}
+                onChange={(e) => setFormData({ ...formData, employee_id: e.target.value })}
                 required
               />
             </div>
-            
+
             <div className="space-y-2">
               <label className="block text-sm font-medium mb-2 text-black dark:text-gray-400">Evaluation Score</label>
               <input
@@ -168,7 +166,7 @@ const Assessment = () => {
                 max="100"
                 className="w-full p-3 border-0 rounded-xl focus:ring-2 focus:ring-blue-500 bg-gray-50 dark:bg-gray-800 shadow-inner"
                 value={formData.evaluate}
-                onChange={(e) => setFormData({...formData, evaluate: parseInt(e.target.value)})}
+                onChange={(e) => setFormData({ ...formData, evaluate: parseInt(e.target.value) })}
                 required
               />
             </div>
@@ -180,7 +178,7 @@ const Assessment = () => {
               className="w-full h-64 p-4 border-0 rounded-xl bg-gray-50 dark:bg-gray-800 shadow-inner"
               rows="4"
               value={formData.comments}
-              onChange={(e) => setFormData({...formData, comments: e.target.value})}
+              onChange={(e) => setFormData({ ...formData, comments: e.target.value })}
               placeholder="Add your assessment comments..."
             />
           </div>
@@ -188,35 +186,35 @@ const Assessment = () => {
           <div className="space-y-2">
             <label className="block text-sm font-medium mb-2 text-black dark:text-gray-400">Envident</label>
             <div
-            className="w-full h-96 rounded-xl bg-gray-700 mb-4 overflow-hidden cursor-pointer"
-            onClick={() => fileInputRef.current?.click()}
-            style={{
-              backgroundImage: `url(${formData?.link})`,
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-            }}
-          />
-            <input
-            type="file"
-            ref={fileInputRef}
-            onChange={handleEnvidenceChange}
-            accept=".png, .jpg, .jpeg, .gif, .webp, .pdf, .doc, .docx, .txt, .zip, .rar"
-            className="hidden"
-          />
-          <div className='flex '>
-            <button
+              className="w-full h-96 rounded-xl bg-gray-700 mb-4 overflow-hidden cursor-pointer"
               onClick={() => fileInputRef.current?.click()}
-              disabled={isUploading}
-              className="bg-gradient-to-br from-teal-500 to-green-600 text-white py-2 px-4 rounded-lg mr-4"
-            >
-              {isUploading ? "Đang tải lên..." : "Thay ảnh"}
-            </button>
-            <button
-              onClick={handleRemoveEnvidence}
-              className="bg-gradient-to-br from-red-400 to-red-500 text-white py-2 px-4 rounded-lg">
-              Gỡ ảnh
-            </button>
-          </div>
+              style={{
+                backgroundImage: `url(${formData?.link})`,
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+              }}
+            />
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleEnvidenceChange}
+              accept=".png, .jpg, .jpeg, .gif, .webp, .pdf, .doc, .docx, .txt, .zip, .rar"
+              className="hidden"
+            />
+            <div className='flex '>
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                disabled={isUploading}
+                className="bg-gradient-to-br from-teal-500 to-green-600 text-white py-2 px-4 rounded-lg mr-4"
+              >
+                {isUploading ? "Đang tải lên..." : "Thay ảnh"}
+              </button>
+              <button
+                onClick={handleRemoveEnvidence}
+                className="bg-gradient-to-br from-red-400 to-red-500 text-white py-2 px-4 rounded-lg">
+                Gỡ ảnh
+              </button>
+            </div>
           </div>
 
           <button
