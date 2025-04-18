@@ -24,6 +24,7 @@ const UserAssessments = () => {
         const response = await fetch(`http://localhost:8080/assessment/getAllAssessmentByEmployee/${accountID}?page=${page - 1}&size=${size}`);
         const res = await response.json();
         setAssessments(res.data);
+        console.log(res.data)
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -33,7 +34,6 @@ const UserAssessments = () => {
       try {
         const response = await fetch(`http://localhost:8080/assessment/getTotalElementsByEmployee/${accountID}`);
         const res = await response.json();
-        console.log(res.data)
         setReviewedElements(res.data.reviewedElements);
         setPendingElements(res.data.pendingElements);
         setCancelElements(res.data.cancelElements);
@@ -200,7 +200,7 @@ const UserAssessments = () => {
                         </div>
                         <div className="flex items-center gap-1">
                           <NavLink to={`/user/assessment_details`}
-                            state={{ "assessment": assessment }}
+                            state={{ "assessmentId": assessment.assessmentId }}
                             className={`p-1.5 rounded-md transition-colors ${darkMode
                               ? "hover:bg-gradient-to-r hover:from-blue-700/20 hover:to-purple-700/20"
                               : "hover:bg-gradient-to-r hover:from-blue-700/10 hover:to-purple-700/10"

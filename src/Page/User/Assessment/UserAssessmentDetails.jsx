@@ -1,55 +1,64 @@
+import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { FaStar, FaLink, FaUser, FaClock, FaBuilding, FaImage, FaEdit, FaSave, FaTimes } from "react-icons/fa";
 import { useLocation } from "react-router-dom";
 
 const UserAssessmentDetails = () => {
     const location = useLocation();
-    const assessment = location.state?.assessment;
+    const assessmentId = location.state?.assessmentId;
+    const [assessmentBackup, setAssessmentBackup] = useState(null);
+    const [assessment, setAssessment] = useState(null);
+    const [isUploading, setIsUploading] = useState(false);
     const [kpi, setKpi] = useState(null);
     const [kpa, setKpa] = useState(null);
     const [isEditing, setIsEditing] = useState(false);
-    const [formData, setFormData] = useState
-        ({
-            kpiId: assessment?.kpiId || "",
-            kpaId: assessment?.kpaId || "",
-            evaluate: assessment?.evaluate || 0,
-            comments: assessment?.comments || "",
-            link: assessment?.link || "",
-        });
     const [previewImage, setPreviewImage] = useState(assessment?.link || "");
 
-
     useEffect(() => {
+        const fetchAssessmentById = async () => {
+            try {
+                const response = await fetch(`http://localhost:8080/assessment/getAssessmentById/${assessmentId}`);
+                const res = await response.json();
+                setAssessment(res.data);
+                setAssessmentBackup(res.data);
+                setPreviewImage(res.data.link);
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            }
+        };
+        fetchAssessmentById();
+
+
+
         const fetchKPI = async () => {
             try {
                 const response = await fetch(`http://localhost:8080/kpi/getAllName`);
                 const res = await response.json();
                 setKpi(res.data);
             } catch (error) {
-                console.error('Error fetching data:', error);
+                console.error("Error fetching data:", error);
             }
         };
         if (isEditing) fetchKPI();
-    }, [isEditing])
+    }, [isEditing]);
 
     useEffect(() => {
         const fetchKPAbyKPI = async () => {
             try {
-                const response = await fetch(`http://localhost:8080/kpa/getAllByKpi/${formData.kpiId}`);
+                const response = await fetch(`http://localhost:8080/kpa/getAllByKpi/${assessment?.kpiId}`);
                 const res = await response.json();
                 setKpa(res.data);
             } catch (error) {
-                console.error('Error fetching data:', error);
+                console.error("Error fetching data:", error);
             }
         };
-        if (formData.kpiId) fetchKPAbyKPI();
-    }, [formData.kpiId])
-
+        if (assessment?.kpiId) fetchKPAbyKPI();
+    }, [assessment?.kpiId]);
 
     // Xử lý thay đổi input
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        setFormData((prev) => ({ ...prev, [name]: value }));
+        setAssessment((prev) => ({ ...prev, [name]: value }));
     };
 
     // Xử lý tải lên file ảnh
@@ -74,8 +83,8 @@ const UserAssessmentDetails = () => {
             );
             console.log(response.data.secure_url);
 
-            setPreviewImage(imageUrl);
-            setFormData((prev) => ({ ...prev, link: imageUrl }));
+            setPreviewImage(response.data.secure_url);
+            setAssessment((prev) => ({ ...prev, link: response.data.secure_url }));
             console.log("Tải ảnh lên thành công!");
         } catch (error) {
             console.log("Có lỗi xảy ra khi tải ảnh lên" + error);
@@ -90,21 +99,28 @@ const UserAssessmentDetails = () => {
     };
 
     // Lưu dữ liệu
-    const handleSave = () => {
-        // Giả lập lưu dữ liệu (thay bằng API call nếu cần)
-        console.log("Saved data:", formData);
+    const handleSave = async () => {
+        try {
+            const response = await fetch(`http://localhost:8080/assessment/updateAssessment/${assessment?.assessmentId}`, {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json",
+                    token: localStorage.getItem("accountID"),
+                },
+                body: JSON.stringify(assessment),
+            });
+            const res = await response.json();
+            console.log(res);
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        }
+        setAssessment(assessmentBackup);
         setIsEditing(false);
     };
 
     // Hủy chỉnh sửa
     const handleCancel = () => {
-        setFormData({
-            kpiName: assessment?.kpiName || "",
-            kpaName: assessment?.kpaName || "",
-            evaluate: assessment?.evaluate || 0,
-            comments: assessment?.comments || "",
-            link: assessment?.link || "",
-        });
+        setAssessmentBackup(assessment);
         setPreviewImage(assessment?.link || "");
         setIsEditing(false);
     };
@@ -163,7 +179,7 @@ const UserAssessmentDetails = () => {
                                     </>
                                 )}
                             </span>
-                            {!isEditing ? (
+                            {!isEditing && assessment?.status !== "reviewed" ? (
                                 <button
                                     onClick={handleEditClick}
                                     className="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white px-6 py-2.5 rounded-full hover:opacity-90 transition-all duration-300 shadow-lg"
@@ -171,20 +187,22 @@ const UserAssessmentDetails = () => {
                                     <FaEdit /> Edit
                                 </button>
                             ) : (
-                                <div className="flex gap-2">
-                                    <button
-                                        onClick={handleSave}
-                                        className="flex items-center gap-2 bg-gradient-to-r from-green-400 to-green-500 text-white px-6 py-2.5 rounded-full hover:opacity-90 transition-all duration-300 shadow-lg"
-                                    >
-                                        <FaSave /> Save
-                                    </button>
-                                    <button
-                                        onClick={handleCancel}
-                                        className="flex items-center gap-2 bg-gradient-to-r from-red-400 to-red-500 text-white px-6 py-2.5 rounded-full hover:opacity-90 transition-all duration-300 shadow-lg"
-                                    >
-                                        <FaTimes /> Cancel
-                                    </button>
-                                </div>
+                                isEditing && (
+                                    <div className="flex gap-2">
+                                        <button
+                                            onClick={handleSave}
+                                            className="flex items-center gap-2 bg-gradient-to-r from-green-400 to-green-500 text-white px-6 py-2.5 rounded-full hover:opacity-90 transition-all duration-300 shadow-lg"
+                                        >
+                                            <FaSave /> Save
+                                        </button>
+                                        <button
+                                            onClick={handleCancel}
+                                            className="flex items-center gap-2 bg-gradient-to-r from-red-400 to-red-500 text-white px-6 py-2.5 rounded-full hover:opacity-90 transition-all duration-300 shadow-lg"
+                                        >
+                                            <FaTimes /> Cancel
+                                        </button>
+                                    </div>
+                                )
                             )}
                             <div className="flex items-center text-gray-500 text bg-gray-50 px-4 py-2 rounded-full shadow-inner">
                                 <FaClock className="mr-2" />
@@ -214,8 +232,8 @@ const UserAssessmentDetails = () => {
                                     </div>
                                     <div className="ml-4">
                                         <h2 className="text-lg font-semibold text-gray-900">Employee</h2>
-                                        <p className="text-gray-700 font-medium">{assessment.employeeName}</p>
-                                        <p className="text-sm text-gray-500">{assessment.employeeJobTitle}</p>
+                                        <p className="text-gray-700 font-medium">{assessment?.employeeName}</p>
+                                        <p className="text-sm text-gray-500">{assessment?.employeeJobTitle}</p>
                                     </div>
                                 </div>
                             </div>
@@ -231,8 +249,8 @@ const UserAssessmentDetails = () => {
                                     </div>
                                     <div className="ml-4">
                                         <h2 className="text-lg font-semibold text-gray-900">Line Manager</h2>
-                                        <p className="text-gray-700 font-medium">{assessment.lineManagerName}</p>
-                                        <p className="text-sm text-gray-500">{assessment.lineManagerJobTitle}</p>
+                                        <p className="text-gray-700 font-medium">{assessment?.lineManagerName}</p>
+                                        <p className="text-sm text-gray-500">{assessment?.lineManagerJobTitle}</p>
                                     </div>
                                 </div>
                             </div>
@@ -245,11 +263,13 @@ const UserAssessmentDetails = () => {
                                     {isEditing ? (
                                         <select
                                             className="w-full p-3 border-0 rounded-xl focus:ring-2 focus:ring-blue-500 bg-gray-50 dark:bg-gray-800 shadow-inner"
-                                            value={formData.kpiId}
-                                            onChange={(e) => setFormData({ ...formData, kpiId: e.target.value })}
+                                            value={assessment?.kpiId}
+                                            onChange={(e) => setAssessment({ ...assessment, kpiId: e.target.value })}
                                             required
                                         >
-                                            <option value="" disabled>Chọn loại KPI</option>
+                                            <option value="" disabled>
+                                                Chọn loại KPI
+                                            </option>
                                             {kpi?.map((item) => (
                                                 <option key={item.kpiId} value={item.kpiId}>
                                                     {item.kpiName}
@@ -267,11 +287,13 @@ const UserAssessmentDetails = () => {
                                     {isEditing ? (
                                         <select
                                             className="w-full p-3 border-0 rounded-xl focus:ring-2 focus:ring-blue-500 bg-gray-50 dark:bg-gray-800 shadow-inner"
-                                            value={formData.kpaId}
-                                            onChange={(e) => setFormData({ ...formData, kpaId: e.target.value })}
+                                            value={assessment?.kpaId}
+                                            onChange={(e) => setAssessment({ ...assessment, kpaId: e.target.value })}
                                             required
                                         >
-                                            <option value="" disabled>Chọn loại KPA</option>
+                                            <option value="" disabled>
+                                                Chọn loại KPA
+                                            </option>
                                             {kpa?.map((item) => (
                                                 <option key={item.kpaId} value={item.kpaId}>
                                                     {item.kpaName}
@@ -295,14 +317,14 @@ const UserAssessmentDetails = () => {
                                 <input
                                     type="number"
                                     name="evaluate"
-                                    value={formData.evaluate}
+                                    value={assessment?.evaluate}
                                     onChange={handleInputChange}
                                     min="0"
                                     max="100"
                                     className="w-full p-2 border border-gray-300 rounded-lg text-center text-4xl font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 />
                             ) : (
-                                <p className="mt-8 text-8xl font-semibold text-gray-800 w-full text-center">{formData.evaluate}%</p>
+                                <p className="mt-8 text-8xl font-semibold text-gray-800 w-full text-center">{assessment?.evaluate}%</p>
                             )}
                         </div>
                     </div>
@@ -314,13 +336,13 @@ const UserAssessmentDetails = () => {
                         {isEditing ? (
                             <textarea
                                 name="comments"
-                                value={formData.comments}
+                                value={assessment?.comments}
                                 onChange={handleInputChange}
                                 className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 rows="4"
                             />
                         ) : (
-                            <p className="text-black leading-relaxed break-words whitespace-pre-wrap w-full">{formData.comments}</p>
+                            <p className="text-black leading-relaxed break-words whitespace-pre-wrap w-full">{assessment?.comments}</p>
                         )}
                     </div>
                 </div>
@@ -347,10 +369,10 @@ const UserAssessmentDetails = () => {
                             )}
                         </div>
                     ) : (
-                        formData.link && (
+                        assessment?.link && (
                             <div className="rounded-xl overflow-hidden shadow-inner">
                                 <img
-                                    src={formData.link}
+                                    src={assessment?.link}
                                     alt="Assessment Evidence"
                                     className="w-full h-auto object-cover transform hover:scale-105 transition-transform duration-300"
                                 />

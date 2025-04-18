@@ -4,6 +4,7 @@ import { NavLink, useLocation } from "react-router-dom";
 
 const UserReviews = () => {
     const [darkMode, setDarkMode] = useState(false);
+    const accountId = localStorage.getItem("accountID");
     const [reviews, setReviews] = useState(null);
     const inputRef = useRef(null);
     const [currentPage, setCurrentPage] = useState(1);
@@ -19,7 +20,7 @@ const UserReviews = () => {
         const fetchReviews = async (page) => {
             try {
                 if (inputRef.current) inputRef.current.value = page;
-                const response = await fetch(`http://localhost:8080/reviews/getAllReviews?page=${page - 1}&size=${size}`);
+                const response = await fetch(`http://localhost:8080/reviews/getAllReviewsByEmployee/${accountId}?page=${page - 1}&size=${size}`);
                 const res = await response.json();
                 setReviews(res.data);
             } catch (error) {
@@ -29,7 +30,7 @@ const UserReviews = () => {
 
         const fetchTotalPages = async () => {
             try {
-                const response = await fetch(`http://localhost:8080/reviews/getTotalElements`);
+                const response = await fetch(`http://localhost:8080/reviews/getTotalElementsByEmployee/${accountId}`);
                 const res = await response.json();
                 setReviewedElements(res.data.reviewedElements);
                 setPendingElements(res.data.pendingElements);

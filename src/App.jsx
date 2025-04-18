@@ -19,6 +19,7 @@ import ReviewDetails from './Page/Admin/Review/ReviewDetails.jsx';
 import EditEmployees from './Page/Admin/Employee/EditEmployees.jsx';
 import UserReviews from './Page/User/Review/UserReviews.jsx'
 import UserReviewDetails from './Page/User/Review/UserReviewDetails.jsx';
+import UserProfiles from './Page/User/Profiles/UserProfiles.jsx';
 
 function App() {
 
@@ -30,7 +31,8 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="*" element={<Page404 />} />
           <Route path="/user" element={<LayoutUser />}>
-            <Route index path="assessments" element={<UserAssessments />} />
+            <Route index path="profiles" element={<UserProfiles />} />
+            <Route path="assessments" element={<UserAssessments />} />
             <Route path="assessment_details" element={<UserAssessmentsDetails />} />
             <Route path="assessment_create" element={<AssessmentCreate />} />
             <Route path="reviews" element={<UserReviews />} />

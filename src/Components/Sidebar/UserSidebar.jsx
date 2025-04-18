@@ -14,7 +14,7 @@ const UserSidebar = ({ darkMode }) => {
         </div>
         <nav className="space-y-3">
           {[
-            { icon: FiUsers, label: "Employees", to: "/user/employees" },
+            { icon: FiUsers, label: "Profiles", to: "/user/profiles" },
             { icon: FiBarChart2, label: "Assessments", to: "/user/assessments" },
             { icon: FiMessageSquare, label: "Reviews", to: "/user/reviews" },
             { icon: FiSettings, label: "Settings", to: "/user/set" }
