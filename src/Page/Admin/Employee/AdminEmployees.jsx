@@ -154,7 +154,7 @@ const AdminEmployees = () => {
                                             <div className="flex items-center gap-3">
                                                 <NavLink
                                                     to={"/admin/employee_details"}
-                                                    state={{ "employee": employee }}
+                                                    state={{ "employeeId": employee.employeeId }}
                                                     className="relative p-2.5 bg-gray-100/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-full hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition-all duration-300 group/action focus:ring-2 focus:ring-indigo-500"
                                                     aria-label="Edit user"
                                                     title="Edit"

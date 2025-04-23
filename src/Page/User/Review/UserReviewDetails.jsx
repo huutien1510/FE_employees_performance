@@ -23,7 +23,7 @@ const UserReviewDetails = () => {
                 method: "PATCH",
                 headers: {
                     "Content-Type": "application/json",
-                    "token": localStorage.getItem("accountID"),
+                    "token": localStorage.getItem("employeeId"),
                 },
                 body: JSON.stringify({ "evaluate": review.evaluate, "comments": review.comments })
             });
@@ -98,7 +98,7 @@ const UserReviewDetails = () => {
                                 <div className="flex items-center">
                                     <div className="w-24 h-24 bg-blue-100 p-1 rounded-3xl">
                                         <img
-                                            src={"https://i.pravatar.cc/100"}
+                                            src={review?.employeeAvatar}
                                             alt="User Avatar"
                                             className="w-full h-full object-cover rounded-full "
                                         />
@@ -115,7 +115,7 @@ const UserReviewDetails = () => {
                                 <div className="flex items-center">
                                     <div className="w-24 h-24 bg-blue-100 p-1 rounded-3xl">
                                         <img
-                                            src={"https://i.pravatar.cc/100"}
+                                            src={review?.lineManagerAvatar}
                                             alt="User Avatar"
                                             className="w-full h-full object-cover rounded-full "
                                         />

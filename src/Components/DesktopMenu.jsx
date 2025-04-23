@@ -58,10 +58,11 @@ const DesktopMenu = ({ menuItems }) => {
     }));
   };
 
-  const handleLogout =() =>{
+  const handleLogout = () => {
     localStorage.removeItem("user");
-    localStorage.removeItem("accountID");
+    localStorage.removeItem("accountId");
     localStorage.removeItem("role");
+    localStorage.removeItem("employeeId");
     navigate(`/login`);
     return;
   }
@@ -144,11 +145,11 @@ const DesktopMenu = ({ menuItems }) => {
         </>
       ) : (
 
-          <NavLink to={"/login"}>
-            <button className="bg-emerald-500 text-white px-4 py-2 rounded-md text-sm font-bold hover:bg-emerald-600 transition-colors">
-              Đăng nhập
-            </button>
-          </NavLink>
+        <NavLink to={"/login"}>
+          <button className="bg-emerald-500 text-white px-4 py-2 rounded-md text-sm font-bold hover:bg-emerald-600 transition-colors">
+            Đăng nhập
+          </button>
+        </NavLink>
       )}
     </div>
   );

@@ -23,7 +23,7 @@ const ReviewDetails = () => {
                 method: "PATCH",
                 headers: {
                     "Content-Type": "application/json",
-                    "token": localStorage.getItem("accountID"),
+                    token: localStorage.getItem("accountId"),
                 },
                 body: JSON.stringify({ "evaluate": review.evaluate, "comments": review.comments })
             });

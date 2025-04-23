@@ -47,7 +47,7 @@ function App() {
             <Route path="assessments" element={<AdminAssessments />} />
             <Route path="assessment_details" element={<AssessmentDetails />} />
             <Route path="employees" element={<AdminEmployees />} />
-            <Route path="employee_details" element={<EditEmployees />} />
+            <Route path="employee_details" element={<EmployeeDetails />} />
             <Route path="reviews" element={<AdminReview />} />
             <Route path="review_details" element={<ReviewDetails />} />
             <Route path="test" element={<EmployeeDetails />} />

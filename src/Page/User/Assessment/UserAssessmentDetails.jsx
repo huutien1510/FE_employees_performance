@@ -6,6 +6,7 @@ import { useLocation } from "react-router-dom";
 const UserAssessmentDetails = () => {
     const location = useLocation();
     const assessmentId = location.state?.assessmentId;
+    const [reviewResult, setReviewResult] = useState(null);
     const [assessmentBackup, setAssessmentBackup] = useState(null);
     const [assessment, setAssessment] = useState(null);
     const [isUploading, setIsUploading] = useState(false);
@@ -19,6 +20,7 @@ const UserAssessmentDetails = () => {
             try {
                 const response = await fetch(`http://localhost:8080/assessment/getAssessmentById/${assessmentId}`);
                 const res = await response.json();
+                console.log(res.data)
                 setAssessment(res.data);
                 setAssessmentBackup(res.data);
                 setPreviewImage(res.data.link);
@@ -54,6 +56,20 @@ const UserAssessmentDetails = () => {
         };
         if (assessment?.kpiId) fetchKPAbyKPI();
     }, [assessment?.kpiId]);
+
+    useEffect(() => {
+        const fetchReviewResult = async () => {
+            try {
+                const response = await fetch(`http://localhost:8080/reviews/getReviewResultById/${assessment.assessmentId}`);
+                const res = await response.json();
+                console.log(res.data)
+                setReviewResult(res.data);
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            }
+        };
+        if (assessment?.status == "reviewed") fetchReviewResult();
+    }, [assessment?.status]);
 
     // Xử lý thay đổi input
     const handleInputChange = (e) => {
@@ -105,7 +121,7 @@ const UserAssessmentDetails = () => {
                 method: "PATCH",
                 headers: {
                     "Content-Type": "application/json",
-                    token: localStorage.getItem("accountID"),
+                    token: localStorage.getItem("employeeId"),
                 },
                 body: JSON.stringify(assessment),
             });
@@ -225,7 +241,7 @@ const UserAssessmentDetails = () => {
                                 <div className="flex items-center">
                                     <div className="w-24 h-24 bg-blue-100 p-1 rounded-3xl">
                                         <img
-                                            src={"https://i.pravatar.cc/100"}
+                                            src={assessment?.employeeAvatar}
                                             alt="User Avatar"
                                             className="w-full h-full object-cover rounded-full"
                                         />
@@ -242,7 +258,7 @@ const UserAssessmentDetails = () => {
                                 <div className="flex items-center">
                                     <div className="w-24 h-24 bg-blue-100 p-1 rounded-3xl">
                                         <img
-                                            src={"https://i.pravatar.cc/100"}
+                                            src={assessment?.lineManagerAvatar}
                                             alt="User Avatar"
                                             className="w-full h-full object-cover rounded-full"
                                         />
@@ -380,6 +396,28 @@ const UserAssessmentDetails = () => {
                         )
                     )}
                 </div>
+                {assessment?.status == "reviewed" && (
+                    <div className="bg-green-200  rounded-xl shadow-md p-6 border border-gray-100">
+                        <h3 className="text-xl font-semibold text-gray-900 mb-2">Review Results</h3>
+                        <div className="flex items-center mb-4 bg-white">
+                            <span className="ml-3 text-2xl font-bold text-gray-900">{reviewResult?.evaluate} /100%</span>
+                        </div>
+                        <div className="bg-white rounded-lg p-4 mb-3">
+                            <h4 className="text-xl font-semibold text-green-600 mb-2">Review Comments</h4>
+                            <p className="text-gray-700">{reviewResult?.comments}</p>
+                        </div>
+                        <div className="flex items-center text-gray-500 text-sm justify-end">
+                            <FaClock className="mr-2" />
+                            Reviewed at: {new Date(reviewResult?.updatedAt).toLocaleDateString('vi-VN', {
+                                day: '2-digit',
+                                month: '2-digit',
+                                year: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit',
+                            })}
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );

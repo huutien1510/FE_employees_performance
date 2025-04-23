@@ -3,7 +3,7 @@ import { FiPlus, FiSun, FiMoon, FiFile, FiCalendar, FiBarChart2, FiEdit2, FiTras
 import { NavLink, useLocation } from "react-router-dom";
 
 const UserAssessments = () => {
-  const accountID = localStorage.getItem("accountID");
+  const employeeId = localStorage.getItem("employeeId");
   const [darkMode, setDarkMode] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
   const [assessments, setAssessments] = useState(null);
@@ -21,7 +21,7 @@ const UserAssessments = () => {
     const fetchAssessment = async (page) => {
       try {
         if (inputRef.current) inputRef.current.value = page;
-        const response = await fetch(`http://localhost:8080/assessment/getAllAssessmentByEmployee/${accountID}?page=${page - 1}&size=${size}`);
+        const response = await fetch(`http://localhost:8080/assessment/getAllAssessmentByEmployee/${employeeId}?page=${page - 1}&size=${size}`);
         const res = await response.json();
         setAssessments(res.data);
         console.log(res.data)
@@ -32,7 +32,7 @@ const UserAssessments = () => {
 
     const fetchTotalPages = async () => {
       try {
-        const response = await fetch(`http://localhost:8080/assessment/getTotalElementsByEmployee/${accountID}`);
+        const response = await fetch(`http://localhost:8080/assessment/getTotalElementsByEmployee/${employeeId}`);
         const res = await response.json();
         setReviewedElements(res.data.reviewedElements);
         setPendingElements(res.data.pendingElements);
@@ -69,14 +69,14 @@ const UserAssessments = () => {
               Assessment
             </h1>
             <div className="flex gap-4">
-              <button
-                onClick={() => setShowAddModal(true)}
+              <NavLink
+                to={"/user/assessment_create"}
                 className={`flex items-center gap-4 px-4 py-3 bg-blue-500 text-white font-medium rounded-xl transition-all duration-300 ${darkMode ? "hover:bg-gray-800" : "hover:bg-blue-700 hover:text-gray-700"
                   }`}
               >
                 <FiPlus className="w-5 h-5" />
                 New Assessment
-              </button>
+              </NavLink>
               <button
                 onClick={() => setDarkMode(!darkMode)}
                 className={`p-2 rounded-lg transition-colors ${darkMode ? "bg-gray-700 hover:bg-gray-600 text-gray-200 " : "bg-gray-200 hover:bg-gray-300 text-gray-700"

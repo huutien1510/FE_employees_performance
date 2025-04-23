@@ -1,232 +1,298 @@
-import React, { useEffect, useRef, useState } from "react";
-import { FiUser, FiLock, FiMail, FiEye, FiEyeOff, FiMoon, FiSun, FiCheckCircle, FiTarget } from "react-icons/fi";
 import axios from "axios";
-import default_upload from "../../../assets/default_upload.png"
+import React, { useEffect, useState } from "react";
+import { FaSave, FaTimes, FaImage } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
-const Assessment = () => {
-  const fileInputRef = useRef(null);
-  const [isUploading, setIsUploading] = useState(false);
-  const [darkMode, setDarkMode] = useState(false);
-  const [formData, setFormData] = useState({
-    employee_id: "",
-    kpa_id: "",
-    kpi_id: "",
-    evaluate: 0,
+const AssessmentCreate = () => {
+  const navigate = useNavigate();
+  const [assessment, setAssessment] = useState({
+    employeeId: "",
+    lineManagerId: "",
+    kpiId: "",
+    kpaId: "",
+    evaluate: "",
     comments: "",
-    link: default_upload
+    link: "",
+    createdAt: new Date(),
+    updatedAt: new Date()
   });
-  const [kpi, setKpi] = useState(null);
-  const [kpa, setKpa] = useState(null);
-
+  const employeeId = localStorage.getItem("employeeId");
+  const [kpi, setKpi] = useState([]);
+  const [kpa, setKpa] = useState([]);
+  const [isUploading, setIsUploading] = useState(false);
+  const [previewImage, setPreviewImage] = useState("");
+  const [employee, setEmployee] = useState(null);
 
   useEffect(() => {
+    // Fetch KPI data
     const fetchKPI = async () => {
       try {
-        const response = await fetch(`http://localhost:8080/kpi/getAllName`);
+        const response = await fetch("http://localhost:8080/kpi/getAllName");
         const res = await response.json();
         setKpi(res.data);
       } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error("Error fetching KPI data:", error);
       }
     };
     fetchKPI();
-  }, [])
+
+    const fetchEmployeeManager = async () => {
+      try {
+        const response = await fetch(`http://localhost:8080/employees/getEmployeeManager/${employeeId}`);
+        const res = await response.json();
+        console.log(res.data)
+        setEmployee(res.data);
+        setAssessment(prev => ({ ...prev, employeeId: res.data.employeeId, lineManagerId: res.data.lineManagerId }));
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
+    fetchEmployeeManager();
+  }, []);
 
   useEffect(() => {
     const fetchKPAbyKPI = async () => {
-      try {
-        const response = await fetch(`http://localhost:8080/kpa/getAllByKpi/${formData.kpi_id}`);
-        const res = await response.json();
-        setKpa(res.data);
-      } catch (error) {
-        console.error('Error fetching data:', error);
+      if (assessment.kpiId) {
+        try {
+          const response = await fetch(`http://localhost:8080/kpa/getAllByKpi/${assessment.kpiId}`);
+          const res = await response.json();
+          setKpa(res.data);
+          setAssessment(prev => ({ ...prev, kpaId: "" }));
+        } catch (error) {
+          console.error("Error fetching KPA data:", error);
+        }
       }
     };
-    if (formData.kpi_id) fetchKPAbyKPI();
-  }, [formData.kpi_id])
+    fetchKPAbyKPI();
+  }, [assessment.kpiId]);
 
-  const handleEnvidenceChange = async (e) => {
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setAssessment(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleFileChange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
     if (file.size > 5 * 1024 * 1024) {
-      toast.error("File quá lớn. Vui lòng chọn file nhỏ hơn 5MB");
+      alert("File quá lớn. Vui lòng chọn file nhỏ hơn 5MB");
       return;
     }
 
     setIsUploading(true);
     try {
-      const envidence = new FormData();
-      envidence.append("file", file);
-      envidence.append("upload_preset", "demo-upload");
+      const evidence = new FormData();
+      evidence.append("file", file);
+      evidence.append("upload_preset", "demo-upload");
 
       const response = await axios.post(
         "https://api.cloudinary.com/v1_1/dqlb6zx2q/image/upload",
-        envidence
+        evidence
       );
-      console.log(response.data.secure_url);
 
-      setPreviewImage(imageUrl);
-      setFormData((prev) => ({ ...prev, link: imageUrl }));
+      setPreviewImage(response.data.secure_url);
+      setAssessment(prev => ({ ...prev, link: response.data.secure_url }));
       console.log("Tải ảnh lên thành công!");
     } catch (error) {
-      console.log("Có lỗi xảy ra khi tải ảnh lên" + error);
+      console.error("Có lỗi xảy ra khi tải ảnh lên:", error);
     } finally {
       setIsUploading(false);
     }
   };
 
-  const handleRemoveEnvidence = (e) => {
-    e.preventDefault();
-    fileInputRef.current.value = "";
-    setFormData((prev) => ({
-      ...prev,
-      link: default_upload,
-    }))
-  }
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log("Assessment submitted:", formData);
+  const handleSave = async () => {
+    try {
+      const response = await fetch("http://localhost:8080/assessment/createAssessment", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          token: localStorage.getItem("employeeId"),
+        },
+        body: JSON.stringify(assessment),
+      });
+      const res = await response.json();
+      console.log("Assessment created:", res);
+      navigate(-1);
+      alert("Assessment created successfully!");
+    } catch (error) {
+      console.error("Error creating assessment:", error);
+      alert("Failed to create assessment.");
+    }
   };
 
-  const glassStyle = darkMode ?
-    "bg-gray-900/80 backdrop-blur-lg border border-gray-700" :
-    "bg-white/80 backdrop-blur-lg border border-gray-200";
+  const handleCancel = () => {
+    setAssessment(prev => prev, ({
+      kpiId: "",
+      kpaId: "",
+      evaluate: "",
+      comments: "",
+      link: ""
+    }));
+    setPreviewImage("");
+    setKpa([]);
+  };
 
   return (
-    <div className={`min-h-screen p-8 ${darkMode ? "bg-gradient-to-br from-gray-900 via-gray-800 to-black" : "bg-gradient-to-br from-blue-50 via-white to-gray-100"} bg-opacity-95 mt-16`}>
-      <div className={`max-w-4xl mx-auto ${glassStyle} rounded-2xl p-8 shadow-xl`}>
-        <div className="flex justify-between items-center mb-12">
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
-            KPI Assessment
-          </h1>
-          <button
-            onClick={() => setDarkMode(!darkMode)}
-            className={`p-3 rounded-full ${darkMode ? "bg-gray-800 hover:bg-gray-700" : "bg-gray-100 hover:bg-gray-200"} transition-all duration-300 shadow-lg`}
-          >
-            {darkMode ? <FiSun className="w-6 h-6" /> : <FiMoon className="w-6 h-6" />}
-          </button>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-6xl mx-auto space-y-8">
+        <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100 transform hover:scale-[1.01] transition-all">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <h1 className="text-3xl font-bold text-gray-900 tracking-tight bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              Create Assessment
+            </h1>
+            <div className="flex gap-2">
+              <button
+                onClick={handleSave}
+                className="flex items-center gap-2 bg-gradient-to-r from-green-400 to-green-500 text-white px-6 py-2.5 rounded-full hover:opacity-90 transition-all duration-300 shadow-lg"
+              >
+                <FaSave /> Save
+              </button>
+              <button
+                onClick={handleCancel}
+                className="flex items-center gap-2 bg-gradient-to-r from-red-400 to-red-500 text-white px-6 py-2.5 rounded-full hover:opacity-90 transition-all duration-300 shadow-lg"
+              >
+                <FaTimes /> Cancel
+              </button>
+            </div>
+          </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="space-y-2">
-              <label className="block text-sm font-medium mb-2 text-black dark:text-gray-400">KPI ID</label>
-              <select
-                className="w-full p-3 border-0 rounded-xl focus:ring-2 focus:ring-blue-500 bg-gray-50 dark:bg-gray-800 shadow-inner"
-                value={formData.kpi_id}
-                onChange={(e) => setFormData({ ...formData, kpi_id: e.target.value })}
-                required
-              >
-                <option value="" disabled>Chọn loại KPI</option>
-                {kpi?.map((item) => (
-                  <option key={item.kpiId} value={item.kpiId}>
-                    {item.kpiName}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="space-y-2">
-              <label className="block text-sm font-medium mb-2 text-black dark:text-gray-400">KPA ID</label>
-              <select
-                className="w-full p-3 border-0 rounded-xl focus:ring-2 focus:ring-blue-500 bg-gray-50 dark:bg-gray-800 shadow-inner"
-                value={formData.kpa_id}
-                onChange={(e) => setFormData({ ...formData, kpa_id: e.target.value })}
-                required
-              >
-                <option value="" disabled>Chọn loại KPA</option>
-                {kpa?.map((item) => (
-                  <option key={item.kpaId} value={item.kpaId}>
-                    {item.kpaName}
-                  </option>
-                ))}
-              </select>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="lg:col-span-2">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 hover:border-blue-200 transition-all hover:shadow-xl">
+                <div className="flex items-center">
+                  <div className="w-24 h-24 bg-blue-100 p-1 rounded-3xl">
+                    <img
+                      src={employee?.employeeAvatar}
+                      alt="Employee Avatar"
+                      className="w-full h-full object-cover rounded-full"
+                    />
+                  </div>
+                  <div className="ml-4">
+                    <h2 className="text-lg font-semibold text-gray-900">Employee</h2>
+                    <p className="text-gray-700 font-medium">{employee?.employeeName || "Loading..."}</p>
+                    <p className="text-sm text-gray-500">{employee?.employeeJobTitle || "N/A"}</p>
+                  </div>
+                </div>
+              </div>
 
+              <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 hover:border-purple-200 transition-all hover:shadow-xl">
+                <div className="flex items-center">
+                  <div className="w-24 h-24 bg-blue-100 p-1 rounded-3xl">
+                    <img
+                      src={employee?.lineManagerAvatar}
+                      alt="Line Manager Avatar"
+                      className="w-full h-full object-cover rounded-full"
+                    />
+                  </div>
+                  <div className="ml-4">
+                    <h2 className="text-lg font-semibold text-gray-900">Line Manager</h2>
+                    <p className="text-gray-700 font-medium">{employee?.lineManagerName || "None..."}</p>
+                    <p className="text-sm text-gray-500">{employee?.lineManagerJobTitle || "N/A"}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-8 bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="p-6 bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl">
+                  <h3 className="text-sm font-medium text-purple-600 mb-2">KPI (Key Performance Indicator)</h3>
+                  <select
+                    name="kpiId"
+                    value={assessment.kpiId}
+                    onChange={handleInputChange}
+                    className="w-full p-3 border-0 rounded-xl focus:ring-2 focus:ring-blue-500 bg-gray-50 shadow-inner"
+                    required
+                  >
+                    <option value="" disabled>Chọn loại KPI</option>
+                    {kpi.map((item) => (
+                      <option key={item.kpiId} value={item.kpiId}>
+                        {item.kpiName}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="p-6 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl">
+                  <h3 className="text-sm font-medium text-blue-600 mb-2">KPA (Key Performance Area)</h3>
+                  <select
+                    name="kpaId"
+                    value={assessment.kpaId}
+                    onChange={handleInputChange}
+                    className="w-full p-3 border-0 rounded-xl focus:ring-2 focus:ring-blue-500 bg-gray-50 shadow-inner"
+                    required
+                    disabled={!assessment.kpiId}
+                  >
+                    <option value="" disabled>Chọn loại KPA</option>
+                    {kpa.map((item) => (
+                      <option key={item.kpaId} value={item.kpaId}>
+                        {item.kpaName}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="space-y-2">
-              <label className="block text-sm font-medium mb-2 text-black dark:text-gray-400">Employee ID</label>
-              <input
-                type="text"
-                className="w-full p-3 border-0 rounded-xl focus:ring-2 focus:ring-blue-500 bg-gray-50 dark:bg-gray-800 shadow-inner"
-                value={formData.employee_id}
-                onChange={(e) => setFormData({ ...formData, employee_id: e.target.value })}
-                required
-              />
-            </div>
-
-            <div className="space-y-2">
-              <label className="block text-sm font-medium mb-2 text-black dark:text-gray-400">Evaluation Score</label>
+          <div className="lg:col-span-1 h-full">
+            <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100 top-8 mt-5 h-72">
+              <h3 className="mt-5 text-xl font-semibold text-gray-900 mb-6">Evaluation</h3>
               <input
                 type="number"
+                name="evaluate"
+                value={assessment.evaluate}
+                onChange={handleInputChange}
                 min="0"
                 max="100"
-                className="w-full p-3 border-0 rounded-xl focus:ring-2 focus:ring-blue-500 bg-gray-50 dark:bg-gray-800 shadow-inner"
-                value={formData.evaluate}
-                onChange={(e) => setFormData({ ...formData, evaluate: parseInt(e.target.value) })}
-                required
+                className="w-full p-2 border border-gray-300 rounded-lg text-center text-4xl font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="0-100"
               />
             </div>
           </div>
+        </div>
 
-          <div className="space-y-2">
-            <label className="block text-sm font-medium mb-2 text-black dark:text-gray-400">Comments</label>
+        <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100">
+          <div className="bg-gray-50 rounded-lg p-4">
+            <h4 className="text-xl font-semibold text-gray-900 mb-2">Comments</h4>
             <textarea
-              className="w-full h-64 p-4 border-0 rounded-xl bg-gray-50 dark:bg-gray-800 shadow-inner"
+              name="comments"
+              value={assessment.comments}
+              onChange={handleInputChange}
+              className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               rows="4"
-              value={formData.comments}
-              onChange={(e) => setFormData({ ...formData, comments: e.target.value })}
-              placeholder="Add your assessment comments..."
+              placeholder="Enter your comments here..."
             />
           </div>
+        </div>
 
-          <div className="space-y-2">
-            <label className="block text-sm font-medium mb-2 text-black dark:text-gray-400">Envident</label>
-            <div
-              className="w-full h-96 rounded-xl bg-gray-700 mb-4 overflow-hidden cursor-pointer"
-              onClick={() => fileInputRef.current?.click()}
-              style={{
-                backgroundImage: `url(${formData?.link})`,
-                backgroundSize: "cover",
-                backgroundPosition: "center",
-              }}
-            />
+        <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100 overflow-hidden">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-xl font-semibold text-gray-900">Evidence Image</h3>
+            <FaImage className="text-gray-400 text-2xl" />
+          </div>
+          <div className="space-y-4">
             <input
               type="file"
-              ref={fileInputRef}
-              onChange={handleEnvidenceChange}
-              accept=".png, .jpg, .jpeg, .gif, .webp, .pdf, .doc, .docx, .txt, .zip, .rar"
-              className="hidden"
+              accept="image/*"
+              onChange={handleFileChange}
+              className="w-full p-2 border border-gray-300 rounded-lg"
+              disabled={isUploading}
             />
-            <div className='flex '>
-              <button
-                onClick={() => fileInputRef.current?.click()}
-                disabled={isUploading}
-                className="bg-gradient-to-br from-teal-500 to-green-600 text-white py-2 px-4 rounded-lg mr-4"
-              >
-                {isUploading ? "Đang tải lên..." : "Thay ảnh"}
-              </button>
-              <button
-                onClick={handleRemoveEnvidence}
-                className="bg-gradient-to-br from-red-400 to-red-500 text-white py-2 px-4 rounded-lg">
-                Gỡ ảnh
-              </button>
-            </div>
+            {previewImage && (
+              <img
+                src={previewImage}
+                alt="Evidence Preview"
+                className="w-full h-auto object-cover rounded-xl shadow-inner"
+              />
+            )}
           </div>
-
-          <button
-            type="submit"
-            className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-4 px-6 rounded-xl hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-300 transform hover:scale-[1.02] font-medium text-lg shadow-lg"
-          >
-            Submit Assessment
-          </button>
-        </form>
+        </div>
       </div>
     </div>
   );
 };
 
-export default Assessment;
+export default AssessmentCreate;

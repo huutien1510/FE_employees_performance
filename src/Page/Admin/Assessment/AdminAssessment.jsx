@@ -3,7 +3,6 @@ import { FiPlus, FiSun, FiMoon, FiFile, FiCalendar, FiBarChart2, FiEdit2, FiTras
 import { NavLink, useLocation } from "react-router-dom";
 
 const AdminAssessments = () => {
-    const accountID = localStorage.getItem("accountID");
     const [darkMode, setDarkMode] = useState(false);
     const [showAddModal, setShowAddModal] = useState(false);
     const [assessments, setAssessments] = useState(null);

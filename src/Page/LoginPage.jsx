@@ -5,7 +5,7 @@ import { FaBuilding } from "react-icons/fa";
 const LoginPage = () => {
   const [showpwd, setShowpwd] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
   const [formLogin, setFormLogin] = useState({
     username: "",
     pwd: ""
@@ -40,15 +40,17 @@ const LoginPage = () => {
       });
       const res = await response.json();
       if (res.data) {
+        console.log(res.data)
         localStorage.setItem("user", res.data.username);
         localStorage.setItem("role", res.data.accRole);
-        localStorage.setItem("accountID", res.data.accountId);
+        localStorage.setItem("accountId", res.data.accountId);
+        localStorage.setItem("employeeId", res.data.employeeId);
         if (res.data.accRole === "admin")
-            navigate("/admin",{ replace: true });
-        else navigate("/user",{ replace: true });
+          navigate("/admin", { replace: true });
+        else navigate("/user", { replace: true });
         return;
       }
-      throw new Error(res.message);
+      throw new Error(res.data);
     } catch (err) {
       console.error(err);
     }
@@ -143,7 +145,7 @@ const LoginPage = () => {
               </div>
             </div>
 
-                {/* <div>
+            {/* <div>
                   <label className="block text-sm font-medium mb-2" htmlFor="role">
                     Role
                   </label>
@@ -163,8 +165,8 @@ const LoginPage = () => {
                     </select>
                   </div>
                 </div> */}
-              
-              {/* <div className="flex items-center justify-between">
+
+            {/* <div className="flex items-center justify-between">
                 <label className="flex items-center">
                   <input type="checkbox" className="rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
                   <span className="ml-2 text-sm">Remember me</span>
@@ -176,7 +178,7 @@ const LoginPage = () => {
 
             <button
               type="submit"
-              className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-4 px-6 rounded-xl hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-300 transform hover:scale-[1.02] font-medium text-lg shadow-lg" 
+              className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-4 px-6 rounded-xl hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-300 transform hover:scale-[1.02] font-medium text-lg shadow-lg"
             >
               Sign In
             </button>
