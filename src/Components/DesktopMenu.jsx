@@ -88,9 +88,9 @@ const DesktopMenu = ({ menuItems }) => {
           ))}
       </div>
 
-      {/* Search Section */}
-      <div className="relative flex items-center">
-        {/* Search Input */}
+
+      {/* <div className="relative flex items-center">
+
         <div
           className={`absolute top-[-10px] right-0 transition-all duration-300 ease-in-out ${showSearch ? "w-64 opacity-100" : "w-0 opacity-0"
             }`}
@@ -108,7 +108,7 @@ const DesktopMenu = ({ menuItems }) => {
           </div>
         </div>
 
-        {/* Search Button */}
+
         <button
           onClick={handleSearchClick}
           className="text-white hover:text-emerald-500 focus:outline-none relative z-10 mr-2"
@@ -128,7 +128,7 @@ const DesktopMenu = ({ menuItems }) => {
             />
           </svg>
         </button>
-      </div>
+      </div> */}
 
       {/* Auth Buttons */}
       {user ? (
@@ -140,14 +140,14 @@ const DesktopMenu = ({ menuItems }) => {
             className="bg-emerald-500 text-white px-4 py-2 rounded-md text-sm font-bold hover:bg-emerald-600 transition-colors"
             onClick={handleLogout}
           >
-            Đăng xuất
+            Logout
           </button>
         </>
       ) : (
 
         <NavLink to={"/login"}>
           <button className="bg-emerald-500 text-white px-4 py-2 rounded-md text-sm font-bold hover:bg-emerald-600 transition-colors">
-            Đăng nhập
+            Login
           </button>
         </NavLink>
       )}

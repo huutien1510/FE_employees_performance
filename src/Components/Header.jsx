@@ -12,8 +12,8 @@ const Header = () => {
   }, [location]);
 
   const menuItems = [
-    { name: "Assessment", href: "/assessment" },
-    { name: "Review", href: "/review" },
+    // { name: "Assessment", href: "/assessment" },
+    // { name: "Review", href: "/review" },
     // { name: "Cuộc thi", href: "/contests" },
     // { name: "Tin tức", href: "/blogs" },
   ];

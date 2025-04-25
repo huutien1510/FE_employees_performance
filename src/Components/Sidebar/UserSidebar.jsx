@@ -2,6 +2,7 @@ import { FiUser, FiLock, FiMail, FiEye, FiEyeOff, FiMoon, FiSun, FiCheckCircle, 
 import { NavLink } from "react-router-dom";
 
 const UserSidebar = ({ darkMode }) => {
+  const role = localStorage.getItem("role");
   return (
     <section id="sidebar"
       className="w-64 p-4 my-4">
@@ -16,7 +17,7 @@ const UserSidebar = ({ darkMode }) => {
           {[
             { icon: FiUsers, label: "Profiles", to: "/user/profiles" },
             { icon: FiBarChart2, label: "Assessments", to: "/user/assessments" },
-            { icon: FiMessageSquare, label: "Reviews", to: "/user/reviews" },
+            ...(role !== "Employee" ? [{ icon: FiMessageSquare, label: "Reviews", to: "/user/reviews" }] : []),
             { icon: FiSettings, label: "Settings", to: "/user/set" }
           ].map((item) => (
             <NavLink

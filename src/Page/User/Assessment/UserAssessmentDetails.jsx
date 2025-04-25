@@ -20,7 +20,7 @@ const UserAssessmentDetails = () => {
             try {
                 const response = await fetch(`http://localhost:8080/assessment/getAssessmentById/${assessmentId}`);
                 const res = await response.json();
-                console.log(res.data)
+                console.log(res.data);
                 setAssessment(res.data);
                 setAssessmentBackup(res.data);
                 setPreviewImage(res.data.link);
@@ -30,11 +30,9 @@ const UserAssessmentDetails = () => {
         };
         fetchAssessmentById();
 
-
-
         const fetchKPI = async () => {
             try {
-                const response = await fetch(`http://localhost:8080/kpi/getAllName`);
+                const response = await fetch(`http://localhost:8080/kpi/getAllNameByYear?year=${new Date(assessment?.createdAt).getFullYear()}`);
                 const res = await response.json();
                 setKpi(res.data);
             } catch (error) {
@@ -62,22 +60,20 @@ const UserAssessmentDetails = () => {
             try {
                 const response = await fetch(`http://localhost:8080/reviews/getReviewResultById/${assessment.assessmentId}`);
                 const res = await response.json();
-                console.log(res.data)
+                console.log(res.data);
                 setReviewResult(res.data);
             } catch (error) {
                 console.error("Error fetching data:", error);
             }
         };
-        if (assessment?.status == "reviewed") fetchReviewResult();
+        if (assessment?.status === "reviewed") fetchReviewResult();
     }, [assessment?.status]);
 
-    // Xử lý thay đổi input
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setAssessment((prev) => ({ ...prev, [name]: value }));
     };
 
-    // Xử lý tải lên file ảnh
     const handleFileChange = async (e) => {
         const file = e.target.files[0];
         if (!file) return;
@@ -109,12 +105,10 @@ const UserAssessmentDetails = () => {
         }
     };
 
-    // Bật chế độ chỉnh sửa
     const handleEditClick = () => {
         setIsEditing(true);
     };
 
-    // Lưu dữ liệu
     const handleSave = async () => {
         try {
             const response = await fetch(`http://localhost:8080/assessment/updateAssessment/${assessment?.assessmentId}`, {
@@ -134,7 +128,6 @@ const UserAssessmentDetails = () => {
         setIsEditing(false);
     };
 
-    // Hủy chỉnh sửa
     const handleCancel = () => {
         setAssessmentBackup(assessment);
         setPreviewImage(assessment?.link || "");
@@ -147,15 +140,13 @@ const UserAssessmentDetails = () => {
                 <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100 transform hover:scale-[1.01] transition-all">
                     <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                         <h1 className="text-3xl font-bold text-gray-900 tracking-tight bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                            Assessment Review
+                            Assessment Details
                         </h1>
                         <div className="flex items-center gap-4">
                             <span
                                 className={`flex items-center gap-2 px-4 py-1.5 rounded-full text-base font-semibold shadow-sm border ${assessment?.status === "reviewed"
                                     ? "bg-green-100 text-green-700 border-green-300"
-                                    : assessment?.status === "pending"
-                                        ? "bg-yellow-100 text-yellow-700 border-yellow-300"
-                                        : "bg-red-100 text-red-700 border-red-300"
+                                    : "bg-yellow-100 text-yellow-700 border-yellow-300"
                                     }`}
                             >
                                 {assessment?.status === "reviewed" && (
@@ -180,18 +171,6 @@ const UserAssessmentDetails = () => {
                                             />
                                         </svg>
                                         Pending
-                                    </>
-                                )}
-                                {assessment?.status === "cancel" && (
-                                    <>
-                                        <svg className="w-4 h-4 text-red-500" fill="currentColor" viewBox="0 0 20 20">
-                                            <path
-                                                fillRule="evenodd"
-                                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm2.121-10.121a1 1 0 00-1.414-1.414L10 8.586 9.293 7.879a1 1 0 00-1.414 1.414L8.586 10l-.707.707a1 1 0 001.414 1.414L10 11.414l.707.707a1 1 0 001.414-1.414L11.414 10l.707-.707z"
-                                                clipRule="evenodd"
-                                            />
-                                        </svg>
-                                        Cancelled
                                     </>
                                 )}
                             </span>
@@ -396,8 +375,8 @@ const UserAssessmentDetails = () => {
                         )
                     )}
                 </div>
-                {assessment?.status == "reviewed" && (
-                    <div className="bg-green-200  rounded-xl shadow-md p-6 border border-gray-100">
+                {assessment?.status === "reviewed" && (
+                    <div className="bg-green-200 rounded-xl shadow-md p-6 border border-gray-100">
                         <h3 className="text-xl font-semibold text-gray-900 mb-2">Review Results</h3>
                         <div className="flex items-center mb-4 bg-white">
                             <span className="ml-3 text-2xl font-bold text-gray-900">{reviewResult?.evaluate} /100%</span>
@@ -408,12 +387,12 @@ const UserAssessmentDetails = () => {
                         </div>
                         <div className="flex items-center text-gray-500 text-sm justify-end">
                             <FaClock className="mr-2" />
-                            Reviewed at: {new Date(reviewResult?.updatedAt).toLocaleDateString('vi-VN', {
-                                day: '2-digit',
-                                month: '2-digit',
-                                year: 'numeric',
-                                hour: '2-digit',
-                                minute: '2-digit',
+                            Reviewed at: {new Date(reviewResult?.updatedAt).toLocaleDateString("vi-VN", {
+                                day: "2-digit",
+                                month: "2-digit",
+                                year: "numeric",
+                                hour: "2-digit",
+                                minute: "2-digit",
                             })}
                         </div>
                     </div>

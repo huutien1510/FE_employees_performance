@@ -27,7 +27,7 @@ const AssessmentCreate = () => {
     // Fetch KPI data
     const fetchKPI = async () => {
       try {
-        const response = await fetch("http://localhost:8080/kpi/getAllName");
+        const response = await fetch(`http://localhost:8080/kpi/getAllNameByYear?year=${new Date().getFullYear()}`);
         const res = await response.json();
         setKpi(res.data);
       } catch (error) {

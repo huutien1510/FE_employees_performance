@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { FiCheckCircle, FiTarget, FiPlus, FiEdit2, FiTrash2, FiClock, FiMessageSquare, FiXCircle, FiSun, FiMoon } from "react-icons/fi";
+import { FiCheckCircle, FiTarget, FiPlus, FiEdit2, FiClock, FiMessageSquare, FiXCircle, FiSun, FiMoon } from "react-icons/fi";
 import { NavLink, useLocation } from "react-router-dom";
 
 const UserReviews = () => {
@@ -11,7 +11,6 @@ const UserReviews = () => {
     const [totalElements, setTotalElements] = useState(0);
     const [reviewedElements, setReviewedElements] = useState(0);
     const [pendingElements, setPendingElements] = useState(0);
-    const [cancelElements, setCancelElements] = useState(0);
     const [totalPages, setTotalPages] = useState(1);
     const size = 10;
     const location = useLocation();
@@ -23,6 +22,7 @@ const UserReviews = () => {
                 const response = await fetch(`http://localhost:8080/reviews/getAllReviewsByEmployee/${employeeId}?page=${page - 1}&size=${size}`);
                 const res = await response.json();
                 setReviews(res.data);
+                console.log(res.data)
             } catch (error) {
                 console.error("Error fetching data:", error);
             }
@@ -34,7 +34,6 @@ const UserReviews = () => {
                 const res = await response.json();
                 setReviewedElements(res.data.reviewedElements);
                 setPendingElements(res.data.pendingElements);
-                setCancelElements(res.data.cancelElements);
                 setTotalElements(res.data.reviewedElements + res.data.pendingElements + res.data.cancelElements);
                 setTotalPages(Math.ceil((res.data.reviewedElements + res.data.pendingElements + res.data.cancelElements) / size));
             } catch (error) {
@@ -50,7 +49,6 @@ const UserReviews = () => {
         { label: "Total Reviews", value: totalElements, icon: FiMessageSquare, color: "blue" },
         { label: "Reviewed", value: reviewedElements, icon: FiCheckCircle, color: "purple" },
         { label: "Pending", value: pendingElements, icon: FiClock, color: "yellow" },
-        { label: "Cancel", value: cancelElements, icon: FiXCircle, color: "red" }
     ];
 
     const handlePageChange = (page) => {
@@ -81,7 +79,7 @@ const UserReviews = () => {
                     </div>
 
                     {/* Stats Section */}
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                         {statsData.map((stat) => (
                             <div
                                 key={stat.label}
@@ -242,13 +240,6 @@ const UserReviews = () => {
                                                 >
                                                     <FiEdit2 className={`w-5 h-5 ${darkMode ? "text-blue-400" : "text-blue-500"}`} />
                                                 </NavLink>
-                                                <button
-                                                    className={`p-2 rounded-full transition-colors duration-200 ${darkMode ? "hover:bg-red-900/50" : "hover:bg-red-100"
-                                                        }`}
-                                                    title="Delete"
-                                                >
-                                                    <FiTrash2 className={`w-5 h-5 ${darkMode ? "text-red-400" : "text-red-500"}`} />
-                                                </button>
                                             </div>
                                         </div>
                                     </div>

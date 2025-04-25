@@ -25,10 +25,10 @@ const UserReviewDetails = () => {
                     "Content-Type": "application/json",
                     "token": localStorage.getItem("employeeId"),
                 },
-                body: JSON.stringify({ "evaluate": review.evaluate, "comments": review.comments })
+                body: JSON.stringify({ "evaluate": review.evaluate, "comments": review.comments, "updatedAt": new Date() })
             });
             const res = await response.json();
-            console.log(res)
+            console.log(res.data)
             navigate(-1);
         } catch (error) {
             console.error("Error fetching data:", error);

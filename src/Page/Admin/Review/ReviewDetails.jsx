@@ -25,7 +25,7 @@ const ReviewDetails = () => {
                     "Content-Type": "application/json",
                     token: localStorage.getItem("accountId"),
                 },
-                body: JSON.stringify({ "evaluate": review.evaluate, "comments": review.comments })
+                body: JSON.stringify({ "evaluate": review.evaluate, "comments": review.comments, "updatedAt": new Date() })
             });
             const res = await response.json();
             console.log(res)

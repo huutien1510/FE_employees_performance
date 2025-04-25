@@ -13,6 +13,7 @@ const EmployeeDetails = () => {
     const [kpis, setKpis] = useState(null);
     const [kpas, setKpas] = useState(null);
     const [selectedKPI, setSelectedKPI] = useState(null);
+    const [kpiEvaluation, setKpiEvaluation] = useState({});
 
     useEffect(() => {
         const fetchKPI = async (selectedYear) => {
@@ -78,6 +79,37 @@ const EmployeeDetails = () => {
         fetchEmployees();
 
     }, []);
+
+
+    useEffect(() => {
+        if (!kpis || kpis.length === 0) return;
+
+        const fetchAllEvaluations = async () => {
+            // Chạy song song tất cả các fetch, lấy về mảng [ [kpiId, evaluation], ... ]
+            const entries = await Promise.all(
+                kpis.map(async (kpi) => {
+                    const response = await fetch(
+                        `http://localhost:8080/kpi/getEvaluationByKpi/${kpi.kpiId}/${employeeId}`
+                    );
+                    const res = await response.json();
+                    return [kpi.kpiId, res.data ?? 0];
+                })
+            );
+
+            // Chuyển mảng entries thành object { kpiId: evaluation, ... }
+            const evalMap = Object.fromEntries(entries);
+
+            // Cập nhật state chỉ một lần
+            setKpiEvaluation(evalMap);
+
+            // Debug: bây giờ mới log chắc chắn có dữ liệu
+            console.log("KPI evaluations:", evalMap);
+        };
+
+        fetchAllEvaluations();
+    }, [kpis]);
+
+
 
     return (
         <div className="w-full min-h-screen bg-gray-50">
@@ -201,12 +233,12 @@ const EmployeeDetails = () => {
                                     >
                                         <div className="flex justify-between text-sm mb-2">
                                             <span className="text-gray-600">{kpi?.kpiName}</span>
-                                            <span className="font-semibold text-blue-700">{kpi?.percent} /100 %</span>
+                                            <span className="font-semibold text-blue-700">{kpiEvaluation[kpi?.kpiId]} /100 %</span>
                                         </div>
                                         <div className="w-full bg-blue-200 rounded-full h-2">
                                             <div
                                                 className="bg-blue-500 rounded-full h-2 transition-all duration-500"
-                                                style={{ width: `${kpi?.percent}%` }}
+                                                style={{ width: `${kpiEvaluation[kpi?.kpiId]}%` }}
                                             ></div>
                                         </div>
                                         <p className="text-sm text-gray-600 mt-2 italic bg-purple-50 p-2 rounded-lg">
@@ -227,7 +259,7 @@ const EmployeeDetails = () => {
                                     <div key={kpa?.kpaId} className="mb-4">
                                         <div className="flex justify-between text-sm mb-2">
                                             <span className="text-gray-600">{kpa?.kpaName}</span>
-                                            <span className="font-semibold text-purple-700">{kpa?.evaluate > kpa?.percent ? kpa?.percent : (kpa?.evaluate < 0 ? 0 : kpa?.evaluate) || 0} /{kpa?.percent}%</span>
+                                            <span className="font-semibold text-purple-700">{kpa?.evaluate > 100 ? 100 : (kpa?.evaluate < 0 ? 0 : kpa?.evaluate) || 0} /100%</span>
                                         </div>
                                         <div className="w-full bg-purple-200 rounded-full h-2">
                                             <div
