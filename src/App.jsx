@@ -20,6 +20,7 @@ import EditEmployees from './Page/Admin/Employee/EditEmployees.jsx';
 import UserReviews from './Page/User/Review/UserReviews.jsx'
 import UserReviewDetails from './Page/User/Review/UserReviewDetails.jsx';
 import UserProfiles from './Page/User/Profiles/UserProfiles.jsx';
+import AdminKPI from './Page/Admin/KPI/AdminKPI.jsx';
 
 function App() {
 
@@ -50,7 +51,7 @@ function App() {
             <Route path="employee_details" element={<EmployeeDetails />} />
             <Route path="reviews" element={<AdminReview />} />
             <Route path="review_details" element={<ReviewDetails />} />
-            <Route path="test" element={<EmployeeDetails />} />
+            <Route path="kpi" element={<AdminKPI />} />
           </Route>
 
         </Routes>

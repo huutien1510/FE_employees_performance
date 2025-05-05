@@ -355,7 +355,7 @@ const AdminReviews = () => {
                                     />
                                 </div>
                             </div>
-                            <div className="space-y-4 max-h-[calc(345vh-16rem)] overflow-y-auto">
+                            <div className="space-y-4 max-h-[calc(250vh-8rem)] overflow-y-auto">
                                 <div
                                     key={0}
                                     className={`p-4 rounded-lg ${selectedEmployee === null ? (darkMode ? "bg-gray-700" : "bg-gray-300") : "bg-transparent"} ${darkMode ? "hover:bg-gray-700" : "hover:bg-gray-300"} transition-all duration-300 cursor-pointer hover:shadow-sm`}

@@ -1,4 +1,5 @@
-import { FiHome, FiBarChart2, FiUsers, FiMessageSquare, FiSettings } from "react-icons/fi";
+import { FaBullseye } from "react-icons/fa";
+import { FiHome, FiBarChart2, FiUsers, FiMessageSquare, FiSettings, FiTarget } from "react-icons/fi";
 import { NavLink } from "react-router-dom";
 
 const AdminSidebar = ({ darkMode }) => {
@@ -16,6 +17,7 @@ const AdminSidebar = ({ darkMode }) => {
           {[
             { icon: FiHome, label: "Dashboard", to: "/admin", end: true },
             { icon: FiUsers, label: "Employees", to: "/admin/employees" },
+            { icon: FiTarget, label: "KPIs", to: "/admin/kpi" },
             { icon: FiBarChart2, label: "Assessments", to: "/admin/assessments" },
             { icon: FiMessageSquare, label: "Reviews", to: "/admin/reviews" },
             { icon: FiSettings, label: "Settings", to: "/admin/set" }

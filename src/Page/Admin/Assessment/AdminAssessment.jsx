@@ -6,27 +6,27 @@ const AdminAssessments = () => {
     const [darkMode, setDarkMode] = useState(false);
     const [assessments, setAssessments] = useState(null);
     const [employees, setEmployees] = useState([]); // Danh sách nhân viên cho sidebar
-    const [selectedEmployee, setSelectedEmployee] = useState(null); // Nhân viên được chọn
+    const location = useLocation();
+    const [selectedEmployee, setSelectedEmployee] = useState(location.state?.employee); // Nhân viên được chọn
     const [searchText, setSearchText] = useState("");
     const inputRef = useRef(null);
     const searchInputRef = useRef(null);
-    const assessmentsBackupRef = useRef(null);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalElements, setTotalElements] = useState(0);
     const [reviewedElements, setReviewedElements] = useState(0);
     const [pendingElements, setPendingElements] = useState(0);
     const [totalPages, setTotalPages] = useState(1);
     const size = 10;
-    const location = useLocation();
+    const employeesBackupRef = useRef([]);
 
     // Lấy danh sách nhân viên cho sidebar
     useEffect(() => {
         const fetchEmployees = async () => {
             try {
-                const response = await fetch(`http://localhost:8080/employees/getAllEmployees?page=0&size=1000`);
+                const response = await fetch(`http://localhost:8080/employees/getAllEmployeesSideBar?page=0&size=1000`);
                 const res = await response.json();
                 setEmployees(res.data || []);
-                assessmentsBackupRef.current = res.data;
+                employeesBackupRef.current = res.data;
             } catch (error) {
                 console.error("Error fetching employees:", error);
             }
@@ -45,7 +45,6 @@ const AdminAssessments = () => {
                 }
                 const response = await fetch(url);
                 const res = await response.json();
-                assessmentsBackupRef.current = res.data;
                 setAssessments(res.data);
             } catch (error) {
                 console.error("Error fetching assessments:", error);
@@ -56,7 +55,7 @@ const AdminAssessments = () => {
             try {
                 let url = `http://localhost:8080/assessment/getTotalElements`;
                 if (selectedEmployee) {
-                    url = `http://localhost:8080/assessment/getTotalElementsByEmployeeId?employeeId=${selectedEmployee.employeeId}`;
+                    url = `http://localhost:8080/assessment/getTotalElementsByEmployee/${selectedEmployee.employeeId}`;
                 }
                 const response = await fetch(url);
                 const res = await response.json();
@@ -89,7 +88,7 @@ const AdminAssessments = () => {
     const performSearch = async (keyword) => {
         if (keyword.trim() !== "") {
             try {
-                const filteredEmployees = assessmentsBackupRef.current?.filter(employee =>
+                const filteredEmployees = employeesBackupRef.current?.filter(employee =>
                     employee.name.toLowerCase().includes(keyword.toLowerCase())
                 );
                 setEmployees(filteredEmployees);
@@ -97,7 +96,7 @@ const AdminAssessments = () => {
                 console.error("Search failed:", error);
             }
         } else {
-            setEmployees(assessmentsBackupRef.current);
+            setEmployees(employeesBackupRef.current);
         }
     };
 
@@ -356,7 +355,7 @@ const AdminAssessments = () => {
                                     />
                                 </div>
                             </div>
-                            <div className="space-y-4 max-h-[calc(345vh-16rem)] overflow-y-auto">
+                            <div className="space-y-4 max-h-[calc(250vh-8rem)] overflow-y-auto">
                                 <div
                                     key={0}
                                     className={`p-4 rounded-lg ${selectedEmployee === null ? (darkMode ? "bg-gray-700" : "bg-gray-300") : "bg-transparent"} ${darkMode ? "hover:bg-gray-700" : "hover:bg-gray-300"} transition-all duration-300 cursor-pointer hover:shadow-sm`}

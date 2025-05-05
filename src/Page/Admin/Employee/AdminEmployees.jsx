@@ -17,10 +17,10 @@ const AdminEmployees = () => {
     const size = 10;
 
     useEffect(() => {
-        const fetchEmployees = async (page) => {
+        const fetchEmployeesAdmin = async (page) => {
             try {
                 if (inputRef.current) inputRef.current.value = page;
-                const response = await fetch(`http://localhost:8080/employees/getAllEmployees?page=${page - 1}&size=${size}`);
+                const response = await fetch(`http://localhost:8080/employees/getAllEmployeesAdmin?page=${page - 1}&size=${size}`);
                 const res = await response.json();
                 employeeBackupRef.current = res.data;
                 setEmployees(res.data);
@@ -40,7 +40,7 @@ const AdminEmployees = () => {
             }
         };
 
-        fetchEmployees(currentPage);
+        fetchEmployeesAdmin(currentPage);
         fetchTotalPages();
     }, [currentPage, location]);
 
@@ -139,19 +139,19 @@ const AdminEmployees = () => {
                                             {/* Cột 2: Trạng thái Assessment (có thể click) */}
                                             <div className="md:col-span-4 flex justify-center">
                                                 <NavLink
-                                                    to={`/admin/employee_reviews/${employee.employeeId}`}
-                                                    state={{ employeeId: employee.employeeId }}
+                                                    to={`/admin/assessments`}
+                                                    state={{ employee: employee }}
                                                     className="inline-block"
                                                 >
                                                     <div className={`flex items-center gap-2 px-4 py-2 rounded-lg cursor-pointer transition-all duration-300 ${darkMode ? "bg-gray-700 hover:bg-gray-600" : "bg-gray-100 hover:bg-gray-200"}`}>
                                                         <FiTarget className="w-5 h-5 text-blue-500" />
                                                         <div className="flex flex-col items-center">
                                                             <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                                                {employee?.assessmentStatus?.completed}/{employee?.assessmentStatus?.total} Assessments
+                                                                {employee?.reviewed}/{employee?.pending + employee?.reviewed} Assessments
                                                             </span>
-                                                            {employee?.assessmentStatus?.total - employee?.assessmentStatus?.completed > 0 ? (
+                                                            {employee?.pending > 0 ? (
                                                                 <span className="text-sm text-orange-500">
-                                                                    {employee?.assessmentStatus?.total - employee?.assessmentStatus?.completed} pending
+                                                                    {employee?.pending} pending
                                                                 </span>
                                                             ) : (
                                                                 <span className="text-sm text-green-500">All reviewed</span>
